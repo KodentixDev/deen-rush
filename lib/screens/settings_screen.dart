@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../config/app_theme.dart';
 import '../l10n/app_strings.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -100,61 +99,42 @@ class SettingsScreen extends StatelessWidget {
           _SettingsSection(
             title: strings.text('languageTitle'),
             body: strings.text('languageBody'),
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: AppStrings.supportedLocales.map(
+            child: DropdownButtonFormField<Locale>(
+              value: AppStrings.supportedLocales.firstWhere(
+                (locale) => locale.languageCode == currentLocale.languageCode,
+                orElse: () => AppStrings.supportedLocales.first,
+              ),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.translate_rounded),
+                filled: true,
+                fillColor: theme.colorScheme.surfaceContainerHighest,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant,
+                  ),
+                ),
+              ),
+              items: AppStrings.supportedLocales.map(
                 (locale) {
-                  final isSelected =
-                      currentLocale.languageCode == locale.languageCode;
-
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () => onLocaleChanged(locale),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppTheme.primary.withValues(alpha: 0.16)
-                            : theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppTheme.primary
-                              : theme.colorScheme.outlineVariant,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.translate_rounded,
-                            size: 18,
-                            color: isSelected
-                                ? AppTheme.primary
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            strings.localeLabel(locale),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: isSelected
-                                  ? AppTheme.primary
-                                  : theme.colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  return DropdownMenuItem<Locale>(
+                    value: locale,
+                    child: Text(strings.localeLabel(locale)),
                   );
                 },
               ).toList(),
+              onChanged: (locale) {
+                if (locale != null) {
+                  onLocaleChanged(locale);
+                }
+              },
             ),
           ),
           const SizedBox(height: 16),

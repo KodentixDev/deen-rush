@@ -14,221 +14,17 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+      padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TopSummary(strings: strings),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 22,
-                  offset: const Offset(0, 14),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        strings.welcomeBack,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        strings.scholarName,
-                        style: theme.textTheme.headlineMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const _InlineStat(
-                      icon: Icons.monetization_on_rounded,
-                      value: '1,250',
-                    ),
-                    const SizedBox(height: 8),
-                    const _InlineStat(
-                      icon: Icons.favorite_rounded,
-                      value: '5',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFD8FF57).withValues(alpha: 0.2),
-                  blurRadius: 28,
-                  offset: const Offset(0, 18),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFC94A),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      strings.liveNow,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF5F4500),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFFD8FF57),
-                        Color(0xFFAEFF35),
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFD8FF57).withValues(alpha: 0.36),
-                        blurRadius: 32,
-                        offset: const Offset(0, 20),
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.flash_on_rounded,
-                        size: 46,
-                        color: Color(0xFF274400),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Bilgi\nDuellosu',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          height: 1.02,
-                          color: Color(0xFF274400),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  strings.duelHint,
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
+          _TopBar(strings: strings),
           const SizedBox(height: 16),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(26),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        strings.dailyTaskTitle,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFC94A),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: const Text(
-                        '+50 XP',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF5F4500),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    strings.dailyTaskDescription,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    minHeight: 8,
-                    value: 0.66,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                    color: const Color(0xFFFFC94A),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    '2/3',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _WelcomeCard(strings: strings),
+          const SizedBox(height: 20),
+          _DuelHero(strings: strings),
+          const SizedBox(height: 16),
+          _DailyTaskCard(strings: strings),
           const SizedBox(height: 22),
           Row(
             children: [
@@ -256,7 +52,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisCount: 3,
               crossAxisSpacing: 14,
               mainAxisSpacing: 14,
-              childAspectRatio: 0.9,
+              childAspectRatio: 0.88,
             ),
             itemBuilder: (context, index) {
               final category = quizCatalog[index];
@@ -280,7 +76,7 @@ class HomeScreen extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 16,
+                        blurRadius: 18,
                         offset: const Offset(0, 10),
                       ),
                     ],
@@ -305,8 +101,8 @@ class HomeScreen extends StatelessWidget {
                         strings.categoryLabel(category.labelKey),
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
                           color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -321,8 +117,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _TopSummary extends StatelessWidget {
-  const _TopSummary({
+class _TopBar extends StatelessWidget {
+  const _TopBar({
     required this.strings,
   });
 
@@ -336,7 +132,7 @@ class _TopSummary extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(999),
@@ -347,17 +143,16 @@ class _TopSummary extends StatelessWidget {
                 ClipOval(
                   child: Image.asset(
                     AppAssets.logo,
-                    width: 34,
-                    height: 34,
+                    width: 28,
+                    height: 28,
                     fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    strings.appName,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
+                const SizedBox(width: 8),
+                Text(
+                  strings.appName,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: const Color(0xFF1298A3),
                   ),
                 ),
               ],
@@ -365,15 +160,15 @@ class _TopSummary extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        const _SummaryPill(
-          icon: Icons.monetization_on_rounded,
+        const _StatPill(
           value: '500',
+          icon: Icons.monetization_on_rounded,
           color: Color(0xFFFFC94A),
         ),
         const SizedBox(width: 8),
-        const _SummaryPill(
-          icon: Icons.favorite_rounded,
+        const _StatPill(
           value: '5',
+          icon: Icons.favorite_rounded,
           color: Color(0xFFFF6E7C),
         ),
       ],
@@ -381,21 +176,267 @@ class _TopSummary extends StatelessWidget {
   }
 }
 
-class _SummaryPill extends StatelessWidget {
-  const _SummaryPill({
-    required this.icon,
+class _WelcomeCard extends StatelessWidget {
+  const _WelcomeCard({
+    required this.strings,
+  });
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.welcomeBack,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  strings.scholarName,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              _ScoreLine(
+                value: '1,250',
+                icon: Icons.monetization_on_rounded,
+                color: Color(0xFFFFC94A),
+              ),
+              SizedBox(height: 6),
+              _ScoreLine(
+                value: '5',
+                icon: Icons.favorite_rounded,
+                color: Color(0xFFFF6E7C),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DuelHero extends StatelessWidget {
+  const _DuelHero({
+    required this.strings,
+  });
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 182,
+                height: 182,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFD8FF57),
+                      Color(0xFFAFFF34),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFD8FF57).withValues(alpha: 0.34),
+                      blurRadius: 30,
+                      offset: const Offset(0, 18),
+                    ),
+                  ],
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.flash_on_rounded,
+                      size: 46,
+                      color: Color(0xFF294000),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Bilgi\nDuellosu',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w900,
+                        height: 1.04,
+                        color: Color(0xFF294000),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: -6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFC94A),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    strings.liveNow,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF5F4500),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Text(
+            strings.duelHint,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DailyTaskCard extends StatelessWidget {
+  const _DailyTaskCard({
+    required this.strings,
+  });
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: const Color(0xFFFFC94A),
+          width: 1.4,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  strings.dailyTaskTitle,
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFC94A),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  '+50 XP',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF5F4500),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              strings.dailyTaskDescription,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              minHeight: 7,
+              value: 0.66,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              color: const Color(0xFFFFC94A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '2/3',
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatPill extends StatelessWidget {
+  const _StatPill({
     required this.value,
+    required this.icon,
     required this.color,
   });
 
-  final IconData icon;
   final String value;
+  final IconData icon;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(999),
@@ -406,24 +447,29 @@ class _SummaryPill extends StatelessWidget {
         children: [
           Text(
             value,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
           ),
-          const SizedBox(width: 6),
-          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 5),
+          Icon(icon, size: 15, color: color),
         ],
       ),
     );
   }
 }
 
-class _InlineStat extends StatelessWidget {
-  const _InlineStat({
-    required this.icon,
+class _ScoreLine extends StatelessWidget {
+  const _ScoreLine({
     required this.value,
+    required this.icon,
+    required this.color,
   });
 
-  final IconData icon;
   final String value;
+  final IconData icon;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -432,18 +478,15 @@ class _InlineStat extends StatelessWidget {
       children: [
         Text(
           value,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: const Color(0xFFA17A0A),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: icon == Icons.favorite_rounded
+                    ? const Color(0xFFD14A5B)
+                    : const Color(0xFFAF8410),
               ),
         ),
-        const SizedBox(width: 6),
-        Icon(
-          icon,
-          color: icon == Icons.favorite_rounded
-              ? const Color(0xFFFF6E7C)
-              : const Color(0xFFFFC94A),
-          size: 18,
-        ),
+        const SizedBox(width: 5),
+        Icon(icon, size: 16, color: color),
       ],
     );
   }
