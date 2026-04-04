@@ -1,0 +1,58 @@
+name: deen_rush
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter_skill: ^0.2.6
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.21.3+1
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/deen_rush.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/deen_rush.png
+  adaptive_icon_foreground: assets/images/deen_rush.png
+  adaptive_icon_background: "#FFFFFF"
+  web:
+    generate: true
+    image_path: assets/images/deen_rush.png
+    background_color: "#1CB6C3"
+    theme_color: "#1CB6C3"
+  windows:
+    generate: true
+    image_path: assets/images/deen_rush.png
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: assets/images/deen_rush.png
+
+flutter_native_splash:
+  color: "#1CB6C3"
+  image: assets/images/deen_rush.png
+  android: true
+  ios: true
+  web: false
+  fullscreen: true
+  android_12:
+    color: "#1CB6C3"
+    image: assets/images/deen_rush.png
