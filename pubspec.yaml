@@ -47,12 +47,10 @@ flutter_launcher_icons:
     image_path: assets/images/deen_rush.png
 
 flutter_native_splash:
-  color: "#1CB6C3"
-  image: assets/images/deen_rush.png
+  color: "#F9F3EF"
   android: true
   ios: true
   web: false
   fullscreen: true
   android_12:
-    color: "#1CB6C3"
-    image: assets/images/deen_rush.png
+    color: "#F9F3EF"

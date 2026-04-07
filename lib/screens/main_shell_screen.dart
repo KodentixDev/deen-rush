@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../config/app_theme.dart';
 import '../l10n/app_strings.dart';
-import 'community_screen.dart';
+import 'duel_screen.dart';
 import 'home_screen.dart';
-import 'progress_screen.dart';
+import 'profile_screen.dart';
+import 'ranks_screen.dart';
 import 'settings_screen.dart';
 
 class MainShellScreen extends HookWidget {
@@ -15,26 +15,27 @@ class MainShellScreen extends HookWidget {
     required this.themeMode,
     required this.onLocaleChanged,
     required this.onThemeModeChanged,
+    required this.onLogout,
   });
 
   final Locale currentLocale;
   final ThemeMode themeMode;
   final ValueChanged<Locale> onLocaleChanged;
   final ValueChanged<ThemeMode> onThemeModeChanged;
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final currentIndex = useState(0);
+    final isSettingsOpen = useState(false);
+
     final pages = [
       const HomeScreen(),
-      const ProgressScreen(),
-      const CommunityScreen(),
-      SettingsScreen(
-        currentLocale: currentLocale,
-        themeMode: themeMode,
-        onLocaleChanged: onLocaleChanged,
-        onThemeModeChanged: onThemeModeChanged,
+      const DuelScreen(),
+      const RanksScreen(),
+      ProfileScreen(
+        onOpenSettings: () => isSettingsOpen.value = true,
       ),
     ];
 
@@ -44,20 +45,21 @@ class MainShellScreen extends HookWidget {
         label: strings.text('navHome'),
       ),
       _ShellNavItem(
+        icon: Icons.sports_martial_arts_rounded,
+        label: strings.text('navDuel'),
+      ),
+      _ShellNavItem(
         icon: Icons.bar_chart_rounded,
-        label: strings.text('navProgress'),
+        label: strings.text('navRanks'),
       ),
       _ShellNavItem(
-        icon: Icons.groups_rounded,
-        label: strings.text('navCommunity'),
-      ),
-      _ShellNavItem(
-        icon: Icons.tune_rounded,
-        label: strings.text('navSettings'),
+        icon: Icons.person_rounded,
+        label: strings.text('navMe'),
       ),
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F4EF),
       body: SafeArea(
         bottom: false,
         child: Center(
@@ -66,107 +68,147 @@ class MainShellScreen extends HookWidget {
             child: Column(
               children: [
                 Expanded(
-                  child: IndexedStack(
-                    index: currentIndex.value,
-                    children: pages,
-                  ),
+                  child: currentIndex.value == 3 && isSettingsOpen.value
+                      ? SettingsScreen(
+                          currentLocale: currentLocale,
+                          themeMode: themeMode,
+                          onLocaleChanged: onLocaleChanged,
+                          onThemeModeChanged: onThemeModeChanged,
+                          onBackRequested: () => isSettingsOpen.value = false,
+                          onLogout: onLogout,
+                        )
+                      : IndexedStack(
+                          index: currentIndex.value,
+                          children: pages,
+                        ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outlineVariant
-                            .withValues(alpha: 0.8),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 30,
-                          offset: const Offset(0, 16),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: List.generate(
-                          items.length,
-                          (index) {
-                            final item = items[index];
-                            final isSelected = currentIndex.value == index;
-
-                            return Expanded(
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(22),
-                                onTap: () => currentIndex.value = index,
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 220),
-                                  curve: Curves.easeOutCubic,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    gradient: isSelected
-                                        ? const LinearGradient(
-                                            colors: [
-                                              AppTheme.primary,
-                                              Color(0xFF7AD6DB),
-                                            ],
-                                          )
-                                        : null,
-                                    color: isSelected
-                                        ? null
-                                        : Colors.transparent,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        item.icon,
-                                        size: 22,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        item.label,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w800,
-                                          color: isSelected
-                                              ? Colors.white
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
+                  child: _SketchBottomNav(
+                    items: items,
+                    currentIndex: currentIndex.value,
+                    onTap: (index) {
+                      currentIndex.value = index;
+                      if (index != 3) {
+                        isSettingsOpen.value = false;
+                      }
+                    },
                   ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SketchBottomNav extends StatelessWidget {
+  const _SketchBottomNav({
+    required this.items,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  final List<_ShellNavItem> items;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(
+        items.length,
+        (index) {
+          final item = items[index];
+          final isSelected = index == currentIndex;
+
+          if (isSelected) {
+            return GestureDetector(
+              onTap: () => onTap(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 78,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF7A67),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item.icon,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    const SizedBox(height: 1),
+                    SizedBox(
+                      width: 54,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          item.label,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () => onTap(index),
+            child: SizedBox(
+              width: 68,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    item.icon,
+                    size: 25,
+                    color: const Color(0xFF4F4B4B),
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: 68,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        item.label,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF4F4B4B),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

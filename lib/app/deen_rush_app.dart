@@ -4,17 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_theme.dart';
 import '../l10n/app_strings.dart';
+import '../screens/login_screen.dart';
 import '../screens/main_shell_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/splash_screen.dart';
 
 class DeenRushApp extends StatefulWidget {
-  const DeenRushApp({
-    super.key,
-    required this.preferences,
-  });
-
-  final SharedPreferences preferences;
+  const DeenRushApp({super.key});
 
   @override
   State<DeenRushApp> createState() => _DeenRushAppState();
@@ -24,25 +20,47 @@ class _DeenRushAppState extends State<DeenRushApp> {
   static const _localeKey = 'app.locale';
   static const _themeKey = 'app.themeMode';
   static const _onboardingKey = 'app.hasCompletedOnboarding';
+  static const _authKey = 'app.isAuthenticated';
 
   late Locale _locale;
   late ThemeMode _themeMode;
   late bool _hasCompletedOnboarding;
+  late bool _isAuthenticated;
+  SharedPreferences? _preferences;
   bool _isSplashVisible = true;
 
   @override
   void initState() {
     super.initState();
-    final savedLocaleCode = widget.preferences.getString(_localeKey);
-    final savedTheme = widget.preferences.getString(_themeKey);
     final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
 
-    _locale = savedLocaleCode == null
-        ? AppStrings.resolveLocale(systemLocale)
-        : AppStrings.resolveLocale(Locale(savedLocaleCode));
-    _themeMode = _themeModeFromString(savedTheme);
-    _hasCompletedOnboarding =
-        widget.preferences.getBool(_onboardingKey) ?? false;
+    _locale = AppStrings.resolveLocale(systemLocale);
+    _themeMode = ThemeMode.light;
+    _hasCompletedOnboarding = false;
+    _isAuthenticated = true;
+
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    final savedLocaleCode = preferences.getString(_localeKey);
+    final savedTheme = preferences.getString(_themeKey);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _preferences = preferences;
+      _locale = savedLocaleCode == null
+          ? _locale
+          : AppStrings.resolveLocale(Locale(savedLocaleCode));
+      _themeMode = _themeModeFromString(savedTheme);
+      _hasCompletedOnboarding =
+          preferences.getBool(_onboardingKey) ?? false;
+      _isAuthenticated = preferences.getBool(_authKey) ?? true;
+    });
   }
 
   void _handleSplashCompleted() {
@@ -59,7 +77,7 @@ class _DeenRushAppState extends State<DeenRushApp> {
     setState(() {
       _locale = resolvedLocale;
     });
-    await widget.preferences.setString(
+    await _preferences?.setString(
       _localeKey,
       resolvedLocale.languageCode,
     );
@@ -69,7 +87,7 @@ class _DeenRushAppState extends State<DeenRushApp> {
     setState(() {
       _themeMode = nextThemeMode;
     });
-    await widget.preferences.setString(
+    await _preferences?.setString(
       _themeKey,
       nextThemeMode.name,
     );
@@ -79,7 +97,21 @@ class _DeenRushAppState extends State<DeenRushApp> {
     setState(() {
       _hasCompletedOnboarding = true;
     });
-    await widget.preferences.setBool(_onboardingKey, true);
+    await _preferences?.setBool(_onboardingKey, true);
+  }
+
+  Future<void> _handleLoginCompleted() async {
+    setState(() {
+      _isAuthenticated = true;
+    });
+    await _preferences?.setBool(_authKey, true);
+  }
+
+  Future<void> _handleLogout() async {
+    setState(() {
+      _isAuthenticated = false;
+    });
+    await _preferences?.setBool(_authKey, false);
   }
 
   @override
@@ -115,11 +147,18 @@ class _DeenRushAppState extends State<DeenRushApp> {
       );
     }
 
+    if (!_isAuthenticated) {
+      return LoginScreen(
+        onContinue: _handleLoginCompleted,
+      );
+    }
+
     return MainShellScreen(
       currentLocale: _locale,
       themeMode: _themeMode,
       onLocaleChanged: _handleLocaleChanged,
       onThemeModeChanged: _handleThemeModeChanged,
+      onLogout: _handleLogout,
     );
   }
 
