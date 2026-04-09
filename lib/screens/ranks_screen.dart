@@ -40,12 +40,12 @@ class _RanksScreenState extends State<RanksScreen> {
                       children: [
                         _ScaledStage(
                           scale: scale,
-                          height: 64,
+                          height: 60,
                           child: const _BrandHeader(),
                         ),
                         _ScaledStage(
                           scale: scale,
-                          height: 75,
+                          height: 64,
                           child: _LeaderboardTabs(
                             strings: strings,
                             selectedIndex: _selectedPeriod,
@@ -56,7 +56,7 @@ class _RanksScreenState extends State<RanksScreen> {
                         ),
                         _ScaledStage(
                           scale: scale,
-                          height: 330,
+                          height: 252,
                           child: const _PodiumSection(),
                         ),
                         _ScaledStage(
@@ -149,7 +149,6 @@ class _BrandHeader extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.black,
-              border: Border.all(color: Colors.black, width: 1),
             ),
             child: const _CoachAvatar(),
           ),
@@ -182,7 +181,7 @@ class _LeaderboardTabs extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
-        padding: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.only(top: 4),
         child: Container(
           width: 330,
           height: 47,
@@ -204,11 +203,11 @@ class _LeaderboardTabs extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF7A67),
                     borderRadius: BorderRadius.circular(19),
-                    border: Border.all(color: Colors.black, width: 2),
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black,
-                        offset: Offset(0, 1.8),
+                        color: Color(0x26FF7A67),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
@@ -265,7 +264,7 @@ class _PodiumSection extends StatelessWidget {
       children: const [
         Positioned(
           left: 15,
-          top: 208,
+          top: 126,
           child: _SidePodium(
             rank: '2',
             name: 'Sara.K',
@@ -279,12 +278,12 @@ class _PodiumSection extends StatelessWidget {
         ),
         Positioned(
           left: 125,
-          top: 164,
+          top: 92,
           child: _CenterPodium(),
         ),
         Positioned(
           left: 236,
-          top: 222,
+          top: 140,
           child: _SidePodium(
             rank: '3',
             name: 'Amira.R',
@@ -639,11 +638,11 @@ class _SelfRankCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF83F0C2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 2),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(7, 7),
+            color: Color(0x2683F0C2),
+            blurRadius: 16,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -764,9 +763,6 @@ class _XpChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(999),
-        border: borderWidth == 0
-            ? null
-            : Border.all(color: Colors.black, width: borderWidth),
       ),
       child: compactXp && parts.length == 2
           ? RichText(
@@ -855,10 +851,19 @@ class _WarriorAvatar extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      padding: EdgeInsets.all(borderWidth),
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: borderWidth == 0 ? Colors.transparent : Colors.black,
+        color: Colors.transparent,
+        boxShadow: borderWidth == 0
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: ClipOval(
         child: CustomPaint(
@@ -883,7 +888,13 @@ class _NumberAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.black,
-        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(2),
       child: ClipOval(

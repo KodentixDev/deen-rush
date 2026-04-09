@@ -136,11 +136,11 @@ class _SketchBottomNav extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF7A67),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: Colors.black, width: 3),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(0, 4),
+                      color: Color(0x22FF7A67),
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
                     ),
                   ],
                 ),

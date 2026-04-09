@@ -8,9 +8,15 @@ class CategoryLevelsScreen extends StatelessWidget {
   const CategoryLevelsScreen({
     super.key,
     required this.category,
+    this.selectedModeLabel,
+    this.selectedModeIcon,
+    this.selectedModeColor,
   });
 
   final QuizCategory category;
+  final String? selectedModeLabel;
+  final IconData? selectedModeIcon;
+  final Color? selectedModeColor;
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +75,38 @@ class CategoryLevelsScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 18),
+                        if (selectedModeLabel != null) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.20),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  selectedModeIcon ?? category.icon,
+                                  size: 16,
+                                  color: selectedModeColor ?? Colors.white,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  selectedModeLabel!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
                         Text(
                           title,
                           style: theme.textTheme.headlineMedium?.copyWith(
@@ -77,7 +115,7 @@ class CategoryLevelsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Choose a level and open the questions prepared for that stage.',
+                          strings.text('categoryLevelsIntro'),
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: Colors.white.withValues(alpha: 0.9),
                           ),
@@ -87,7 +125,7 @@ class CategoryLevelsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
                   Text(
-                    'Levels',
+                    strings.text('categoryLevels'),
                     style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 12),
@@ -148,7 +186,7 @@ class CategoryLevelsScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Level ${level.number}',
+                                      '${strings.text('categoryLevel')} ${level.number}',
                                       style: theme.textTheme.bodyMedium,
                                     ),
                                     const SizedBox(height: 4),
@@ -173,7 +211,7 @@ class CategoryLevelsScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'question',
+                                    strings.text('categoryQuestions'),
                                     style: theme.textTheme.bodyMedium,
                                   ),
                                 ],

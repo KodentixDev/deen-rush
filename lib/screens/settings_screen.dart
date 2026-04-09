@@ -76,12 +76,16 @@ class SettingsScreen extends HookWidget {
                                   ? const Color(0xFFFFEEE9)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: isSelected
-                                    ? const Color(0xFFFF7A67)
-                                    : Colors.black,
-                                width: 2.5,
-                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isSelected
+                                          ? const Color(0xFFFF7A67)
+                                          : const Color(0xFFE7E1DB))
+                                      .withValues(alpha: 0.28),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
                             ),
                             child: Row(
                               children: [
@@ -362,7 +366,6 @@ class _SettingsHeader extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.black,
-            border: Border.all(color: Colors.black, width: 2),
           ),
           child: Center(
             child: Container(
@@ -446,7 +449,7 @@ class _SettingsTile extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.backgroundColor = Colors.white,
-    this.borderColor = Colors.black,
+    this.borderColor = Colors.transparent,
     this.titleColor = const Color(0xFF1D1B1B),
   });
 
@@ -473,7 +476,16 @@ class _SettingsTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(34),
-            border: Border.all(color: borderColor, width: 3),
+            border: borderColor == Colors.transparent
+                ? null
+                : Border.all(color: borderColor, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE9E2DB).withValues(alpha: 0.8),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -550,7 +562,13 @@ class _NeoSwitch extends StatelessWidget {
         decoration: BoxDecoration(
           color: value ? const Color(0xFF93F0CB) : Colors.white,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 180),
@@ -562,7 +580,13 @@ class _NeoSwitch extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white,
-              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.10),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
           ),
         ),

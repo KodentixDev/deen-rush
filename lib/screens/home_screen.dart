@@ -291,10 +291,9 @@ class _Header extends StatelessWidget {
           width: 43,
           height: 43,
           padding: const EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.black,
-            border: Border.all(color: Colors.black, width: 1.6),
           ),
           child: const ClipOval(
             child: CustomPaint(
@@ -369,7 +368,13 @@ class _GreetingBlock extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFFF7A67),
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -413,7 +418,6 @@ class _XpProgress extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFE4E2DC),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black, width: 3),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -469,7 +473,13 @@ class _DailyQuestCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFFF9F4EF),
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: Colors.black, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,7 +529,13 @@ class _DailyQuestCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: const Color(0xFFFF4A75),
-                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                       Icons.timer_rounded,
@@ -639,10 +655,10 @@ class _StartJourneyButtonState extends State<_StartJourneyButton> {
         decoration: BoxDecoration(
           color: const Color(0xFFB23B2E),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black, width: 3),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: const Color(0xFFB23B2E).withValues(alpha: 0.22),
+              blurRadius: 14,
               offset: Offset(0, _pressed ? 2 : 7),
             ),
           ],
@@ -745,7 +761,13 @@ class _KnowledgeTileState extends State<_KnowledgeTile> {
                 decoration: BoxDecoration(
                   color: widget.item.color,
                   borderRadius: BorderRadius.circular(49),
-                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 16,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Stack(
@@ -844,7 +866,13 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF9F4EF),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -919,11 +947,11 @@ class _FloatingAction extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFF05775D),
-        border: Border.all(color: Colors.black, width: 3),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(7, 7),
+            color: Color(0x2605775D),
+            blurRadius: 14,
+            offset: Offset(0, 8),
           ),
         ],
       ),

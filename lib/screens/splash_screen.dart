@@ -278,10 +278,6 @@ class _SplashBadge extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF7A67),
                   borderRadius: BorderRadius.circular(size * 0.34),
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 4,
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0x22FF7A67),
@@ -434,7 +430,6 @@ class _SplashProgressBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9D5CE),
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.black, width: 4),
                       ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,

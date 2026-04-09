@@ -124,10 +124,9 @@ class ProfileScreen extends StatelessWidget {
                   child: Container(
                     width: 48,
                     height: 48,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: const Color(0xFF6E9399),
-                      border: Border.all(color: Colors.black, width: 2.5),
                     ),
                     child: const Icon(
                       Icons.settings_rounded,
@@ -161,10 +160,9 @@ class ProfileScreen extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 4),
                     ),
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: const Color(0xFF284C4E),
-                        border: Border.all(color: Colors.black, width: 2),
                       ),
                       child: const Icon(
                         Icons.person_rounded,
@@ -184,7 +182,13 @@ class ProfileScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: const Color(0xFF86F8C8),
-                          border: Border.all(color: Colors.black, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.10),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.edit_rounded,
@@ -319,7 +323,6 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-                    side: const BorderSide(color: Colors.black, width: 3),
                   ),
                   shadowColor: Colors.black,
                   elevation: 8,
@@ -369,11 +372,11 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.black, width: 3),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(0, 5),
+            color: Color(0x1AC0B8B0),
+            blurRadius: 14,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -417,7 +420,13 @@ class _MasteryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: item.background,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -427,7 +436,6 @@ class _MasteryCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: item.accent.withValues(alpha: 0.18),
-              border: Border.all(color: Colors.black, width: 2),
             ),
             child: Icon(item.icon, color: item.accent),
           ),
@@ -477,7 +485,13 @@ class _ActivityCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -487,7 +501,6 @@ class _ActivityCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: activity.iconBackground,
-              border: Border.all(color: Colors.black, width: 2),
             ),
             child: Icon(
               activity.icon,

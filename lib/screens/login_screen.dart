@@ -379,11 +379,11 @@ class _LoginCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(38),
-        border: Border.all(color: Colors.black, width: 3.5),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(0, 7),
+            color: Color(0x1FBBB3AC),
+            blurRadius: 16,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -492,8 +492,9 @@ class _QuestBadge extends StatelessWidget {
         color: Color(0xFF86F8C8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(8, 10),
+            color: Color(0x2600A774),
+            blurRadius: 18,
+            offset: Offset(0, 10),
           ),
         ],
       ),
@@ -556,10 +557,6 @@ class _InputShell extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF9F5F1),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: const Color(0xFF9CA4B6),
-          width: 2.2,
-        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFE7DED7).withValues(alpha: 0.9),
@@ -624,11 +621,11 @@ class _PrimaryButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFF7A67),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black, width: 3.5),
           boxShadow: const [
             BoxShadow(
-              color: Colors.black,
-              offset: Offset(0, 6),
+              color: Color(0x26FF7A67),
+              blurRadius: 16,
+              offset: Offset(0, 8),
             ),
           ],
         ),
@@ -672,7 +669,6 @@ class _AuthOptionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.82),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: const Color(0xFF6D6764), width: 2.2),
           boxShadow: [
             BoxShadow(
               color: Colors.white.withValues(alpha: 0.8),
@@ -715,7 +711,7 @@ class _GoogleGlyph extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFF9B9592), width: 1.5),
+        color: Colors.white.withValues(alpha: 0.72),
       ),
       child: const Text(
         'G',

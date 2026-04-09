@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../data/quiz_catalog.dart';
 import '../l10n/app_strings.dart';
-import 'category_levels_screen.dart';
+import 'duel_match_screen.dart';
 
 class DuelScreen extends StatefulWidget {
   const DuelScreen({super.key});
@@ -22,7 +22,7 @@ class _DuelScreenState extends State<DuelScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1300),
     )..forward();
   }
 
@@ -36,7 +36,7 @@ class _DuelScreenState extends State<DuelScreen>
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final items = _duelItems();
-    final mixed = _mixedItem();
+    final featured = _mixedItem();
 
     return DecoratedBox(
       decoration: const BoxDecoration(color: Color(0xFFF9F4EF)),
@@ -44,7 +44,7 @@ class _DuelScreenState extends State<DuelScreen>
         children: [
           const Positioned.fill(child: _DuelBackground()),
           SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(32, 18, 32, 34),
+            padding: const EdgeInsets.fromLTRB(24, 18, 24, 34),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -55,23 +55,31 @@ class _DuelScreenState extends State<DuelScreen>
                   offset: const Offset(0, -12),
                   child: const _DuelHeader(),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 38),
                 _Reveal(
                   controller: _controller,
                   begin: 0.08,
-                  end: 0.32,
+                  end: 0.28,
                   offset: const Offset(-16, 0),
                   child: _DuelHero(strings: strings),
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 14),
+                _Reveal(
+                  controller: _controller,
+                  begin: 0.18,
+                  end: 0.34,
+                  offset: const Offset(0, 14),
+                  child: _HintChip(label: strings.text('duelModeHint')),
+                ),
+                const SizedBox(height: 22),
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    const spacing = 22.0;
+                    const spacing = 16.0;
                     final cardWidth = (constraints.maxWidth - spacing) / 2;
 
                     return Wrap(
                       spacing: spacing,
-                      runSpacing: 20,
+                      runSpacing: 18,
                       children: List.generate(items.length, (index) {
                         final item = items[index];
 
@@ -79,16 +87,16 @@ class _DuelScreenState extends State<DuelScreen>
                           width: cardWidth,
                           child: _Reveal(
                             controller: _controller,
-                            begin: 0.26 + (index * 0.05),
-                            end: 0.58 + (index * 0.045),
-                            offset: Offset(0, 28 + (index * 3)),
+                            begin: 0.24 + (index * 0.05),
+                            end: 0.58 + (index * 0.04),
+                            offset: Offset(0, 22 + (index * 2)),
                             child: _AdventureCard(
                               item: item,
                               title: strings.categoryLabel(
                                 item.category.labelKey,
                               ),
                               levelLabel: strings.text('duelLevelLabel'),
-                              onTap: () => _openCategory(item.category),
+                              onTap: () => _openMatch(item),
                             ),
                           ),
                         );
@@ -96,17 +104,17 @@ class _DuelScreenState extends State<DuelScreen>
                     );
                   },
                 ),
-                const SizedBox(height: 88),
+                const SizedBox(height: 24),
                 _Reveal(
                   controller: _controller,
-                  begin: 0.78,
+                  begin: 0.72,
                   end: 1,
-                  offset: const Offset(0, 28),
+                  offset: const Offset(0, 20),
                   child: _MixedQuizCard(
-                    item: mixed,
+                    item: featured,
                     title: strings.text('mixedQuiz'),
                     levelLabel: strings.text('duelLevelLabel'),
-                    onTap: () => _openCategory(mixed.category),
+                    onTap: () => _openMatch(featured),
                   ),
                 ),
               ],
@@ -117,10 +125,14 @@ class _DuelScreenState extends State<DuelScreen>
     );
   }
 
-  void _openCategory(QuizCategory category) {
+  void _openMatch(_AdventureItem item) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => CategoryLevelsScreen(category: category),
+        builder: (context) => DuelMatchScreen(
+          category: item.category,
+          levelLabel: item.level,
+          accentColor: item.accent,
+        ),
       ),
     );
   }
@@ -166,15 +178,15 @@ class _DuelScreenState extends State<DuelScreen>
         category: mixed.copyAs(
           id: 'hadith',
           labelKey: 'hadith',
-          icon: Icons.chat_rounded,
-          color: const Color(0xFFE3F8F6),
+          icon: Icons.chat_bubble_rounded,
+          color: const Color(0xFFDFF5F5),
         ),
         level: '08',
-        progress: 0.40,
-        color: const Color(0xFFE3F8F6),
+        progress: 0.38,
+        color: const Color(0xFFDFF5F5),
         accent: const Color(0xFF008B7D),
-        titleColor: const Color(0xFF047568),
-        icon: Icons.chat_rounded,
+        titleColor: const Color(0xFF046F68),
+        icon: Icons.chat_bubble_rounded,
         pattern: _CardPattern.none,
         tilt: 0.006,
       ),
@@ -190,7 +202,7 @@ class _DuelScreenState extends State<DuelScreen>
         titleColor: const Color(0xFFD8232B),
         icon: Icons.history_edu_rounded,
         pattern: _CardPattern.none,
-        tilt: -0.006,
+        tilt: -0.008,
       ),
       _AdventureItem(
         category: geography.copyAs(
@@ -215,10 +227,26 @@ class _DuelScreenState extends State<DuelScreen>
         progress: 0.95,
         color: const Color(0xFFFF7565),
         accent: const Color(0xFFB74734),
-        titleColor: const Color(0xFF1F120F),
+        titleColor: const Color(0xFF2E1811),
         icon: Icons.theater_comedy_rounded,
         pattern: _CardPattern.none,
         tilt: 0.008,
+      ),
+      _AdventureItem(
+        category: culture.copyAs(
+          id: 'ethics',
+          labelKey: 'ethics',
+          icon: Icons.favorite_rounded,
+          color: const Color(0xFFE8E3DD),
+        ),
+        level: '09',
+        progress: 0.46,
+        color: const Color(0xFFE8E3DD),
+        accent: const Color(0xFF5C5751),
+        titleColor: const Color(0xFF3A3531),
+        icon: Icons.favorite_rounded,
+        pattern: _CardPattern.none,
+        tilt: -0.004,
       ),
     ];
   }
@@ -232,7 +260,7 @@ class _DuelScreenState extends State<DuelScreen>
         color: const Color(0xFFE2E0DA),
       ),
       level: '01',
-      progress: 0.12,
+      progress: 0.16,
       color: const Color(0xFFE2E0DA),
       accent: const Color(0xFF222222),
       titleColor: const Color(0xFF24211F),
@@ -256,17 +284,17 @@ class _DuelBackground extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: 76,
-            right: -160,
+            top: 92,
+            right: -148,
             child: Container(
-              width: 430,
-              height: 500,
+              width: 380,
+              height: 460,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFFBDF3D5).withValues(alpha: 0.48),
-                    const Color(0xFFBDF3D5).withValues(alpha: 0.04),
+                    const Color(0xFFBDF3D5).withValues(alpha: 0.42),
+                    const Color(0xFFBDF3D5).withValues(alpha: 0.05),
                     const Color(0x00BDF3D5),
                   ],
                 ),
@@ -274,11 +302,11 @@ class _DuelBackground extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: -160,
+            left: -120,
             bottom: -110,
             child: Container(
-              width: 360,
-              height: 360,
+              width: 300,
+              height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
@@ -302,7 +330,7 @@ class _DuelHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height: 50,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -310,7 +338,7 @@ class _DuelHeader extends StatelessWidget {
             start: 0,
             child: Icon(
               Icons.star_rounded,
-              size: 33,
+              size: 30,
               color: Color(0xFFFF7A67),
             ),
           ),
@@ -319,7 +347,7 @@ class _DuelHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 31,
+              fontSize: 29,
               height: 1,
               fontWeight: FontWeight.w900,
               letterSpacing: 0.6,
@@ -329,13 +357,12 @@ class _DuelHeader extends StatelessWidget {
           PositionedDirectional(
             end: 0,
             child: Container(
-              width: 48,
-              height: 48,
+              width: 46,
+              height: 46,
               padding: const EdgeInsets.all(2.2),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.black,
-                border: Border.all(color: Colors.black, width: 1.5),
               ),
               child: const ClipOval(
                 child: CustomPaint(
@@ -366,7 +393,7 @@ class _DuelHero extends StatelessWidget {
         Text(
           strings.text('duelChooseYour'),
           style: const TextStyle(
-            fontSize: 38,
+            fontSize: 34,
             height: 1,
             fontWeight: FontWeight.w900,
             letterSpacing: -1.2,
@@ -379,31 +406,75 @@ class _DuelHero extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           strings.text('duelAdventure'),
           style: const TextStyle(
-            fontSize: 40,
-            height: 0.95,
+            fontSize: 36,
+            height: 0.96,
             fontStyle: FontStyle.italic,
             fontWeight: FontWeight.w900,
-            letterSpacing: -1.2,
+            letterSpacing: -1.1,
             color: Color(0xFFB33B2E),
           ),
         ),
-        const SizedBox(height: 23),
+        const SizedBox(height: 16),
         Text(
           strings.text('duelLevelUp'),
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             height: 1,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.2,
+            fontWeight: FontWeight.w700,
             color: Color(0xFF6D6762),
             fontFamily: 'serif',
           ),
         ),
       ],
+    );
+  }
+}
+
+class _HintChip extends StatelessWidget {
+  const _HintChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.62),
+        borderRadius: BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF0E9E2).withValues(alpha: 0.7),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.touch_app_rounded,
+            size: 18,
+            color: Color(0xFFB7462F),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF5A5552),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -436,30 +507,30 @@ class _AdventureCardState extends State<_AdventureCard> {
       onTapCancel: () => setState(() => _pressed = false),
       onTapUp: (_) => setState(() => _pressed = false),
       child: AnimatedScale(
-        scale: _pressed ? 0.965 : 1,
+        scale: _pressed ? 0.968 : 1,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOutCubic,
         child: Transform.rotate(
           angle: widget.item.tilt,
           child: SizedBox(
-            height: 250,
+            height: 218,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
                 Positioned.fill(
-                  top: 34,
+                  top: 26,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 140),
                     curve: Curves.easeOutCubic,
                     transform: Matrix4.translationValues(0, _pressed ? 4 : 0, 0),
                     decoration: BoxDecoration(
                       color: widget.item.color,
-                      borderRadius: BorderRadius.circular(58),
+                      borderRadius: BorderRadius.circular(42),
                       boxShadow: [
                         BoxShadow(
-                          color: widget.item.color.withValues(alpha: 0.24),
-                          blurRadius: 28,
-                          offset: const Offset(0, 22),
+                          color: widget.item.color.withValues(alpha: 0.22),
+                          blurRadius: 24,
+                          offset: const Offset(0, 18),
                         ),
                       ],
                     ),
@@ -473,27 +544,25 @@ class _AdventureCardState extends State<_AdventureCard> {
                   ),
                 ),
                 Positioned.fill(
-                  top: 34,
+                  top: 26,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 74, 18, 24),
+                    padding: const EdgeInsets.fromLTRB(14, 54, 14, 18),
                     child: Column(
                       children: [
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            widget.title,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 25,
-                              height: 1,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.6,
-                              color: widget.item.titleColor,
-                            ),
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 19,
+                            height: 1.04,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.5,
+                            color: widget.item.titleColor,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         _LevelBadge(
                           label: widget.levelLabel,
                           level: widget.item.level,
@@ -541,22 +610,23 @@ class _AdventureIconBadge extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOutCubic,
-        width: 86,
-        height: 92,
-        transform: Matrix4.translationValues(0, pressed ? 4 : 0, 0),
+        width: 72,
+        height: 78,
+        transform: Matrix4.translationValues(0, pressed ? 3 : 0, 0),
         decoration: BoxDecoration(
           color: const Color(0xFFF9FFF6),
-          borderRadius: BorderRadius.circular(44),
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
-              offset: Offset(7, pressed ? 5 : 9),
+              color: item.accent.withValues(alpha: 0.18),
+              blurRadius: 14,
+              offset: Offset(0, pressed ? 3 : 8),
             ),
           ],
         ),
         child: Icon(
           item.icon,
-          size: 40,
+          size: 34,
           color: item.accent,
         ),
       ),
@@ -592,23 +662,23 @@ class _MixedQuizCardState extends State<_MixedQuizCard> {
       onTapCancel: () => setState(() => _pressed = false),
       onTapUp: (_) => setState(() => _pressed = false),
       child: AnimatedScale(
-        scale: _pressed ? 0.98 : 1,
+        scale: _pressed ? 0.986 : 1,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOutCubic,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
           curve: Curves.easeOutCubic,
-          height: 150,
-          transform: Matrix4.translationValues(0, _pressed ? 5 : 0, 0),
-          padding: const EdgeInsets.fromLTRB(31, 22, 27, 22),
+          height: 118,
+          transform: Matrix4.translationValues(0, _pressed ? 4 : 0, 0),
+          padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
           decoration: BoxDecoration(
             color: widget.item.color,
-            borderRadius: BorderRadius.circular(72),
+            borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFFBDB6AD).withValues(alpha: 0.22),
-                blurRadius: 36,
-                offset: const Offset(0, 18),
+                blurRadius: 28,
+                offset: const Offset(0, 16),
               ),
             ],
           ),
@@ -618,7 +688,7 @@ class _MixedQuizCardState extends State<_MixedQuizCard> {
                 color: widget.item.accent,
                 pressed: _pressed,
               ),
-              const SizedBox(width: 28),
+              const SizedBox(width: 18),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -629,16 +699,16 @@ class _MixedQuizCardState extends State<_MixedQuizCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 26,
-                        height: 1.18,
+                        fontSize: 18,
+                        height: 1.14,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.4,
                         color: widget.item.titleColor,
                       ),
                     ),
-                    const SizedBox(height: 17),
+                    const SizedBox(height: 10),
                     SizedBox(
-                      width: 132,
+                      width: 112,
                       child: _SketchProgress(
                         value: widget.item.progress,
                         color: widget.item.accent,
@@ -647,17 +717,17 @@ class _MixedQuizCardState extends State<_MixedQuizCard> {
                   ],
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 10),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   '${_capitalize(widget.levelLabel)} ${widget.item.level}',
                   maxLines: 1,
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 24,
                     height: 1,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: -1.1,
+                    letterSpacing: -1,
                     color: Colors.black,
                   ),
                 ),
@@ -701,23 +771,24 @@ class _MixedIconBadge extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 140),
       curve: Curves.easeOutCubic,
-      width: 82,
-      height: 82,
-      transform: Matrix4.translationValues(0, pressed ? 4 : 0, 0),
+      width: 64,
+      height: 64,
+      transform: Matrix4.translationValues(0, pressed ? 3 : 0, 0),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
-            offset: Offset(6, pressed ? 4 : 8),
+            color: color.withValues(alpha: 0.16),
+            blurRadius: 12,
+            offset: Offset(0, pressed ? 3 : 7),
           ),
         ],
       ),
       child: Icon(
         Icons.star_rounded,
         color: color.withValues(alpha: 0.55),
-        size: 43,
+        size: 34,
       ),
     );
   }
@@ -737,13 +808,19 @@ class _LevelBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 31,
-      constraints: const BoxConstraints(minWidth: 92),
-      padding: const EdgeInsets.symmetric(horizontal: 13),
+      height: 29,
+      constraints: const BoxConstraints(minWidth: 86),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black, width: 2.8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.16),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       alignment: Alignment.center,
       child: FittedBox(
@@ -752,7 +829,7 @@ class _LevelBadge extends StatelessWidget {
           '$label $level',
           maxLines: 1,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             height: 1,
             fontWeight: FontWeight.w900,
             color: Colors.white,
@@ -775,11 +852,17 @@ class _SketchProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 17,
+      height: 14,
       decoration: BoxDecoration(
-        color: const Color(0xFFE6E1DB),
+        color: const Color(0xFFF2EEE8),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black, width: 2.6),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Align(
@@ -829,7 +912,7 @@ class _Reveal extends StatelessWidget {
               offset.dy * (1 - eased),
             ),
             child: Transform.scale(
-              scale: 0.965 + (0.035 * eased),
+              scale: 0.97 + (0.03 * eased),
               child: child,
             ),
           ),
