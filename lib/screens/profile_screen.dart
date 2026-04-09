@@ -109,9 +109,9 @@ class ProfileScreen extends StatelessWidget {
                   color: Color(0xFFFF7A67),
                 ),
                 const Spacer(),
-                const Text(
-                  'DEENRUSH',
-                  style: TextStyle(
+                Text(
+                  strings.appName.toUpperCase(),
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.3,

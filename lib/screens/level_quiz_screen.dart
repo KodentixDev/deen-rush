@@ -20,6 +20,11 @@ class LevelQuizScreen extends HookWidget {
     final theme = Theme.of(context);
     final questionIndex = useState(0);
     final selectedIndex = useState<int?>(null);
+    final levelTitle = strings.quizLevelTitle(
+      category.id,
+      level.number,
+      level.title,
+    );
     final currentQuestion = level.questions[questionIndex.value];
     final isLastQuestion = questionIndex.value == level.questions.length - 1;
 
@@ -38,14 +43,12 @@ class LevelQuizScreen extends HookWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Level completed'),
-            content: Text(
-              'You finished ${strings.categoryLabel(category.labelKey)} level ${level.number}.',
-            ),
+            title: Text(strings.text('levelCompletedTitle')),
+            content: Text(strings.text('levelCompletedBody')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Back'),
+                child: Text(strings.text('back')),
               ),
             ],
           );
@@ -85,17 +88,17 @@ class LevelQuizScreen extends HookWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Level ${level.number}',
+                                '${strings.text('categoryLevel')} ${level.number}',
                                 style: theme.textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                level.title,
+                                levelTitle,
                                 style: theme.textTheme.titleLarge,
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${questionIndex.value + 1}/${level.questions.length} question',
+                                '${questionIndex.value + 1}/${level.questions.length} ${strings.text('categoryQuestions')}',
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],
@@ -208,7 +211,11 @@ class LevelQuizScreen extends HookWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: selectedIndex.value == null ? null : handleAdvance,
-                      child: Text(isLastQuestion ? 'Finish level' : 'Next question'),
+                      child: Text(
+                        isLastQuestion
+                            ? strings.text('finishLevel')
+                            : strings.text('nextQuestion'),
+                      ),
                     ),
                   ),
                 ],

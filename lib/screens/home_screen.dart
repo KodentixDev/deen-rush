@@ -3,128 +3,62 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../data/quiz_catalog.dart';
+import '../l10n/app_strings.dart';
 import 'category_levels_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1250),
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final categories = _homeCategories();
+    final strings = AppStrings.of(context);
+    final categories = _buildCategories();
 
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Color(0xFFF9F4EF)),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF9F4EF),
+      ),
       child: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(26, 16, 26, 96),
+            padding: const EdgeInsets.fromLTRB(24, 18, 24, 96),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Reveal(
-                  controller: _controller,
-                  begin: 0,
-                  end: 0.2,
-                  offset: const Offset(0, -16),
-                  child: const _Header(),
-                ),
-                const SizedBox(height: 42),
-                _Reveal(
-                  controller: _controller,
-                  begin: 0.1,
-                  end: 0.36,
-                  offset: const Offset(0, 18),
-                  child: const _GreetingBlock(),
-                ),
-                const SizedBox(height: 34),
-                _Reveal(
-                  controller: _controller,
-                  begin: 0.2,
-                  end: 0.5,
-                  offset: const Offset(0, 22),
-                  child: const _DailyQuestCard(),
-                ),
-                const SizedBox(height: 48),
-                _Reveal(
-                  controller: _controller,
-                  begin: 0.34,
-                  end: 0.62,
-                  offset: const Offset(0, 18),
-                  child: const _SectionHeader(),
-                ),
+                _HomeHeader(strings: strings),
                 const SizedBox(height: 28),
+                _GreetingBlock(strings: strings),
+                const SizedBox(height: 28),
+                _DailyQuestCard(strings: strings),
+                const SizedBox(height: 34),
+                _SectionHeader(strings: strings),
+                const SizedBox(height: 18),
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    const spacing = 20.0;
+                    const spacing = 18.0;
                     final width = (constraints.maxWidth - spacing) / 2;
 
                     return Wrap(
                       spacing: spacing,
                       runSpacing: 20,
-                      children: List.generate(categories.length, (index) {
-                        final item = categories[index];
-
-                        return SizedBox(
-                          width: width,
-                          child: _Reveal(
-                            controller: _controller,
-                            begin: 0.45 + (index * 0.055),
-                            end: 0.78 + (index * 0.035),
-                            offset: Offset(0, 28 + (index * 3)),
-                            child: _KnowledgeTile(
-                              item: item,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (context) => CategoryLevelsScreen(
-                                      category: item.category,
-                                    ),
-                                  ),
-                                );
-                              },
+                      children: categories
+                          .map(
+                            (item) => SizedBox(
+                              width: width,
+                              child: _KnowledgeTile(item: item),
                             ),
-                          ),
-                        );
-                      }),
+                          )
+                          .toList(),
                     );
                   },
                 ),
-                const SizedBox(height: 44),
-                _Reveal(
-                  controller: _controller,
-                  begin: 0.72,
-                  end: 1,
-                  offset: const Offset(0, 24),
-                  child: const _StatsRow(),
-                ),
+                const SizedBox(height: 30),
+                _StatsRow(strings: strings),
               ],
             ),
           ),
           const Positioned(
-            right: 32,
+            right: 28,
             bottom: 14,
             child: _FloatingAction(),
           ),
@@ -133,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  List<_KnowledgeItem> _homeCategories() {
+  List<_KnowledgeItem> _buildCategories() {
     final history = _categoryById('history');
     final quran = _categoryById('quran');
     final culture = _categoryById('culture');
@@ -142,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return [
       _KnowledgeItem(
-        label: 'Seerah',
+        labelKey: 'seerah',
         category: history.copyAs(
           id: 'seerah',
           labelKey: 'history',
@@ -155,15 +89,15 @@ class _HomeScreenState extends State<HomeScreen>
         pattern: _TilePattern.dots,
       ),
       _KnowledgeItem(
-        label: 'History',
+        labelKey: 'history',
         category: history,
-        icon: Icons.mosque_rounded,
+        icon: Icons.account_balance_rounded,
         iconColor: const Color(0xFF4B229F),
         color: const Color(0xFFA889FF),
         pattern: _TilePattern.stripes,
       ),
       _KnowledgeItem(
-        label: 'Quran',
+        labelKey: 'quran',
         category: quran,
         icon: Icons.menu_book_rounded,
         iconColor: const Color(0xFF761D15),
@@ -171,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen>
         pattern: _TilePattern.none,
       ),
       _KnowledgeItem(
-        label: 'Ethics',
+        labelKey: 'ethics',
         category: culture.copyAs(
           id: 'ethics',
           labelKey: 'ethics',
@@ -184,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
         pattern: _TilePattern.none,
       ),
       _KnowledgeItem(
-        label: 'Hadith',
+        labelKey: 'hadith',
         category: mixed.copyAs(
           id: 'hadith',
           labelKey: 'hadith',
@@ -197,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen>
         pattern: _TilePattern.none,
       ),
       _KnowledgeItem(
-        label: 'Explore',
+        labelKey: 'explore',
         category: geography.copyAs(
           id: 'explore',
           labelKey: 'explore',
@@ -217,51 +151,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-class _Reveal extends StatelessWidget {
-  const _Reveal({
-    required this.controller,
-    required this.begin,
-    required this.end,
-    required this.offset,
-    required this.child,
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader({
+    required this.strings,
   });
 
-  final AnimationController controller;
-  final double begin;
-  final double end;
-  final Offset offset;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      child: child,
-      builder: (context, child) {
-        final progress =
-            ((controller.value - begin) / (end - begin)).clamp(0.0, 1.0);
-        final eased = Curves.easeOutCubic.transform(progress.toDouble());
-
-        return Opacity(
-          opacity: eased,
-          child: Transform.translate(
-            offset: Offset(
-              offset.dx * (1 - eased),
-              offset.dy * (1 - eased),
-            ),
-            child: Transform.scale(
-              scale: 0.965 + (0.035 * eased),
-              child: child,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header();
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -273,12 +168,12 @@ class _Header extends StatelessWidget {
           color: Color(0xFFFF7A67),
         ),
         const SizedBox(width: 10),
-        const Expanded(
+        Expanded(
           child: Text(
-            'DEENRUSH',
+            strings.appName.toUpperCase(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 27,
               height: 1,
               fontWeight: FontWeight.w900,
@@ -308,7 +203,11 @@ class _Header extends StatelessWidget {
 }
 
 class _GreetingBlock extends StatelessWidget {
-  const _GreetingBlock();
+  const _GreetingBlock({
+    required this.strings,
+  });
+
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +217,7 @@ class _GreetingBlock extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -326,32 +225,32 @@ class _GreetingBlock extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          'Hey, Ahmed!',
+                          '${strings.welcomeBack} ${strings.scholarName}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 28,
                             height: 0.95,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: -1.0,
+                            letterSpacing: -1,
                             color: Color(0xFF242121),
                           ),
                         ),
                       ),
-                      SizedBox(width: 6),
-                      Icon(
+                      const SizedBox(width: 6),
+                      const Icon(
                         Icons.auto_awesome_rounded,
                         size: 22,
                         color: Color(0xFF242121),
                       ),
                     ],
                   ),
-                  SizedBox(height: 7),
+                  const SizedBox(height: 7),
                   Text(
-                    "Ready for today's wisdom?",
+                    strings.text('homeGreeting'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 15.8,
                       height: 1,
                       fontWeight: FontWeight.w600,
@@ -376,18 +275,18 @@ class _GreetingBlock extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.local_fire_department_rounded,
                     size: 15,
                     color: Color(0xFF220D0A),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
-                    '12 DAY STREAK',
-                    style: TextStyle(
+                    strings.text('homeDayStreak'),
+                    style: const TextStyle(
                       fontSize: 12,
                       height: 1,
                       fontWeight: FontWeight.w900,
@@ -448,7 +347,11 @@ class _XpProgress extends StatelessWidget {
 }
 
 class _DailyQuestCard extends StatelessWidget {
-  const _DailyQuestCard();
+  const _DailyQuestCard({
+    required this.strings,
+  });
+
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -469,7 +372,7 @@ class _DailyQuestCard extends StatelessWidget {
         ),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(27, 27, 27, 27),
+          padding: const EdgeInsets.all(27),
           decoration: BoxDecoration(
             color: const Color(0xFFF9F4EF),
             borderRadius: BorderRadius.circular(50),
@@ -487,13 +390,13 @@ class _DailyQuestCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Daily Quest',
-                          style: TextStyle(
+                          strings.dailyTaskTitle,
+                          style: const TextStyle(
                             fontSize: 32,
                             height: 0.96,
                             fontWeight: FontWeight.w900,
@@ -507,12 +410,12 @@ class _DailyQuestCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(height: 13),
+                        const SizedBox(height: 13),
                         Text(
-                          'Conquer the Pillars Challenge',
+                          strings.text('homeDailyQuestSubtitle'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16.5,
                             height: 1,
                             fontWeight: FontWeight.w500,
@@ -546,17 +449,17 @@ class _DailyQuestCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 25),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: _QuestMetric(
-                      label: 'TIME REMAINING',
+                      label: strings.text('homeTimeRemaining'),
                       value: '14:22:05',
-                      valueColor: Color(0xFFB2382A),
+                      valueColor: const Color(0xFFB2382A),
                     ),
                   ),
-                  SizedBox(width: 17),
-                  SizedBox(
+                  const SizedBox(width: 17),
+                  const SizedBox(
                     height: 43,
                     child: VerticalDivider(
                       width: 1,
@@ -564,18 +467,18 @@ class _DailyQuestCard extends StatelessWidget {
                       color: Color(0xFFE5E0DB),
                     ),
                   ),
-                  SizedBox(width: 17),
+                  const SizedBox(width: 17),
                   Expanded(
                     child: _QuestMetric(
-                      label: 'REWARDS',
+                      label: strings.text('homeRewards'),
                       value: '+150 XP',
-                      valueColor: Color(0xFF067B5D),
+                      valueColor: const Color(0xFF067B5D),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              const _StartJourneyButton(),
+              _StartJourneyButton(label: strings.text('homeStartJourney')),
             ],
           ),
         ),
@@ -609,7 +512,7 @@ class _QuestMetric extends StatelessWidget {
               fontSize: 13,
               height: 1,
               fontWeight: FontWeight.w900,
-              letterSpacing: 2.2,
+              letterSpacing: 1.6,
               color: Color(0xFF8E8884),
             ),
           ),
@@ -631,7 +534,11 @@ class _QuestMetric extends StatelessWidget {
 }
 
 class _StartJourneyButton extends StatefulWidget {
-  const _StartJourneyButton();
+  const _StartJourneyButton({
+    required this.label,
+  });
+
+  final String label;
 
   @override
   State<_StartJourneyButton> createState() => _StartJourneyButtonState();
@@ -663,21 +570,21 @@ class _StartJourneyButtonState extends State<_StartJourneyButton> {
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'START JOURNEY',
-                style: TextStyle(
+                widget.label,
+                style: const TextStyle(
                   fontSize: 18,
                   height: 1,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(width: 12),
-              Icon(
+              const SizedBox(width: 12),
+              const Icon(
                 Icons.rocket_launch_rounded,
                 color: Colors.white,
                 size: 25,
@@ -691,16 +598,20 @@ class _StartJourneyButtonState extends State<_StartJourneyButton> {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader();
+  const _SectionHeader({
+    required this.strings,
+  });
+
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         Expanded(
           child: Text(
-            'Knowledge Hub',
-            style: TextStyle(
+            strings.text('homeKnowledgeHub'),
+            style: const TextStyle(
               fontSize: 22,
               height: 1,
               fontWeight: FontWeight.w900,
@@ -710,8 +621,8 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
         Text(
-          'See All',
-          style: TextStyle(
+          strings.seeAll,
+          style: const TextStyle(
             fontSize: 14,
             height: 1,
             fontWeight: FontWeight.w900,
@@ -726,11 +637,9 @@ class _SectionHeader extends StatelessWidget {
 class _KnowledgeTile extends StatefulWidget {
   const _KnowledgeTile({
     required this.item,
-    required this.onTap,
   });
 
   final _KnowledgeItem item;
-  final VoidCallback onTap;
 
   @override
   State<_KnowledgeTile> createState() => _KnowledgeTileState();
@@ -741,17 +650,28 @@ class _KnowledgeTileState extends State<_KnowledgeTile> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+    final label = strings.categoryLabel(widget.item.labelKey);
+
     return Column(
       children: [
         GestureDetector(
-          onTap: widget.onTap,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => CategoryLevelsScreen(
+                  category: widget.item.category,
+                ),
+              ),
+            );
+          },
           onTapDown: (_) => setState(() => _pressed = true),
           onTapCancel: () => setState(() => _pressed = false),
           onTapUp: (_) => setState(() => _pressed = false),
           child: AnimatedScale(
             duration: const Duration(milliseconds: 120),
             curve: Curves.easeOutCubic,
-            scale: _pressed ? 0.965 : 1,
+            scale: _pressed ? 0.97 : 1,
             child: AspectRatio(
               aspectRatio: 1,
               child: AnimatedContainer(
@@ -781,10 +701,19 @@ class _KnowledgeTileState extends State<_KnowledgeTile> {
                       ),
                     ),
                     Center(
-                      child: Icon(
-                        widget.item.icon,
-                        size: 38,
-                        color: widget.item.iconColor,
+                      child: Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.26),
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          widget.item.icon,
+                          size: 26,
+                          color: widget.item.iconColor,
+                        ),
                       ),
                     ),
                   ],
@@ -795,7 +724,7 @@ class _KnowledgeTileState extends State<_KnowledgeTile> {
         ),
         const SizedBox(height: 15),
         Text(
-          widget.item.label,
+          label,
           textAlign: TextAlign.center,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -813,28 +742,32 @@ class _KnowledgeTileState extends State<_KnowledgeTile> {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow();
+  const _StatsRow({
+    required this.strings,
+  });
+
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         Expanded(
           child: _StatCard(
-            label: 'RANK',
+            label: strings.text('homeRank'),
             value: '#42',
             suffix: '2',
-            suffixColor: Color(0xFF007B59),
+            suffixColor: const Color(0xFF007B59),
             showUpArrow: true,
           ),
         ),
-        SizedBox(width: 18),
+        const SizedBox(width: 18),
         Expanded(
           child: _StatCard(
-            label: 'TOTAL XP',
+            label: strings.text('profileTotalXp'),
             value: '12.5k',
-            suffix: 'LEGEND',
-            suffixColor: Color(0xFFB0170E),
+            suffix: strings.text('homeLegend'),
+            suffixColor: const Color(0xFFB0170E),
             showUpArrow: false,
           ),
         ),
@@ -1097,7 +1030,7 @@ class _TilePatternPainter extends CustomPainter {
 
 class _KnowledgeItem {
   const _KnowledgeItem({
-    required this.label,
+    required this.labelKey,
     required this.category,
     required this.icon,
     required this.iconColor,
@@ -1105,7 +1038,7 @@ class _KnowledgeItem {
     required this.pattern,
   });
 
-  final String label;
+  final String labelKey;
   final QuizCategory category;
   final IconData icon;
   final Color iconColor;

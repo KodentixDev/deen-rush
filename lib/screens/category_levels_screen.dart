@@ -191,12 +191,20 @@ class CategoryLevelsScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      level.title,
+                                      strings.quizLevelTitle(
+                                        category.id,
+                                        level.number,
+                                        level.title,
+                                      ),
                                       style: theme.textTheme.titleLarge,
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      level.summary,
+                                      strings.quizLevelSummary(
+                                        category.id,
+                                        level.number,
+                                        level.summary,
+                                      ),
                                       style: theme.textTheme.bodyMedium,
                                     ),
                                   ],

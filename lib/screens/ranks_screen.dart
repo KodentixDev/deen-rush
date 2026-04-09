@@ -120,6 +120,8 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 11, 0, 0),
       child: Row(
@@ -131,9 +133,9 @@ class _BrandHeader extends StatelessWidget {
             color: Color(0xFFFF7A67),
           ),
           const SizedBox(width: 11),
-          const Text(
-            'DEENRUSH',
-            style: TextStyle(
+          Text(
+            strings.appName.toUpperCase(),
+            style: const TextStyle(
               fontSize: 26,
               height: 1,
               fontWeight: FontWeight.w900,

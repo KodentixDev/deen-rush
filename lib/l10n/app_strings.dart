@@ -919,6 +919,94 @@ class AppStrings {
     },
   };
 
+  static const Map<String, Map<String, String>> _extraValues = {
+    'en': {
+      'seerah': 'Seerah',
+      'homeDayStreak': '12 day streak',
+      'homeDailyQuestSubtitle': 'Conquer the pillars challenge',
+      'homeStartJourney': 'Start Journey',
+      'homeKnowledgeHub': 'Knowledge Hub',
+      'homeTimeRemaining': 'Time Remaining',
+      'homeRewards': 'Rewards',
+      'homeRank': 'Rank',
+      'homeLegend': 'Legend',
+      'communityJoinRoom': 'Join room',
+      'levelCompletedTitle': 'Level completed',
+      'levelCompletedBody': 'You finished this level.',
+      'back': 'Back',
+      'finishLevel': 'Finish level',
+      'nextQuestion': 'Next question',
+    },
+    'az': {
+      'seerah': 'Sire',
+      'homeDayStreak': '12 gunluk seriya',
+      'homeDailyQuestSubtitle': 'Islamin esaslarini feth et',
+      'homeStartJourney': 'Basla',
+      'homeKnowledgeHub': 'Bilik Merkezi',
+      'homeTimeRemaining': 'Qalan Vaxt',
+      'homeRewards': 'Mukafatlar',
+      'homeRank': 'Reytinq',
+      'homeLegend': 'Efsane',
+      'communityJoinRoom': 'Odaya qosul',
+      'levelCompletedTitle': 'Seviyye bitdi',
+      'levelCompletedBody': 'Bu seviyyeni ugurla tamamladin.',
+      'back': 'Geri',
+      'finishLevel': 'Seviyyeni bitir',
+      'nextQuestion': 'Novbeti sual',
+    },
+    'tr': {
+      'seerah': 'Siyer',
+      'homeDayStreak': '12 gunluk seri',
+      'homeDailyQuestSubtitle': 'Temel gorevi tamamla',
+      'homeStartJourney': 'Basla',
+      'homeKnowledgeHub': 'Bilgi Merkezi',
+      'homeTimeRemaining': 'Kalan Sure',
+      'homeRewards': 'Oduller',
+      'homeRank': 'Siralama',
+      'homeLegend': 'Efsane',
+      'communityJoinRoom': 'Odaya katil',
+      'levelCompletedTitle': 'Seviye tamamlandi',
+      'levelCompletedBody': 'Bu seviyeyi basariyla bitirdin.',
+      'back': 'Geri',
+      'finishLevel': 'Seviyeyi bitir',
+      'nextQuestion': 'Sonraki soru',
+    },
+    'ru': {
+      'seerah': 'Сира',
+      'homeDayStreak': 'Серия 12 дней',
+      'homeDailyQuestSubtitle': 'Пройди задание по основам',
+      'homeStartJourney': 'Начать',
+      'homeKnowledgeHub': 'Центр знаний',
+      'homeTimeRemaining': 'Оставшееся время',
+      'homeRewards': 'Награды',
+      'homeRank': 'Рейтинг',
+      'homeLegend': 'Легенда',
+      'communityJoinRoom': 'Войти в комнату',
+      'levelCompletedTitle': 'Уровень завершен',
+      'levelCompletedBody': 'Ты успешно завершил этот уровень.',
+      'back': 'Назад',
+      'finishLevel': 'Завершить уровень',
+      'nextQuestion': 'Следующий вопрос',
+    },
+    'ar': {
+      'seerah': 'السيرة',
+      'homeDayStreak': 'سلسلة 12 يوما',
+      'homeDailyQuestSubtitle': 'اكمل تحدي الاساسيات',
+      'homeStartJourney': 'ابدأ',
+      'homeKnowledgeHub': 'مركز المعرفة',
+      'homeTimeRemaining': 'الوقت المتبقي',
+      'homeRewards': 'المكافات',
+      'homeRank': 'الترتيب',
+      'homeLegend': 'اسطورة',
+      'communityJoinRoom': 'انضم الى الغرفة',
+      'levelCompletedTitle': 'اكتمل المستوى',
+      'levelCompletedBody': 'لقد انهيت هذا المستوى بنجاح.',
+      'back': 'رجوع',
+      'finishLevel': 'انه المستوى',
+      'nextQuestion': 'السؤال التالي',
+    },
+  };
+
   static Locale resolveLocale(Locale locale) {
     for (final supportedLocale in supportedLocales) {
       if (supportedLocale.languageCode == locale.languageCode) {
@@ -937,7 +1025,12 @@ class AppStrings {
   String _text(String key) {
     final values =
         _localizedValues[locale.languageCode] ?? _localizedValues['en']!;
-    return values[key] ?? _localizedValues['en']![key] ?? key;
+    final extras = _extraValues[locale.languageCode] ?? _extraValues['en']!;
+    return values[key] ??
+        extras[key] ??
+        _localizedValues['en']![key] ??
+        _extraValues['en']![key] ??
+        key;
   }
 
   String text(String key) => _text(key);
@@ -987,6 +1080,152 @@ class AppStrings {
   String get language => _text('language');
 
   String categoryLabel(String key) => _text(key);
+
+  String quizLevelTitle(String categoryId, int levelNumber, String fallback) {
+    final key = '$categoryId.$levelNumber';
+    final values = switch (locale.languageCode) {
+      'az' => _quizLevelTitlesAz,
+      'tr' => _quizLevelTitlesTr,
+      _ => _quizLevelTitlesEn,
+    };
+    return values[key] ?? _quizLevelTitlesEn[key] ?? fallback;
+  }
+
+  String quizLevelSummary(String categoryId, int levelNumber, String fallback) {
+    final key = '$categoryId.$levelNumber';
+    final values = switch (locale.languageCode) {
+      'az' => _quizLevelSummariesAz,
+      'tr' => _quizLevelSummariesTr,
+      _ => _quizLevelSummariesEn,
+    };
+    return values[key] ?? _quizLevelSummariesEn[key] ?? fallback;
+  }
+
+  static const Map<String, String> _quizLevelTitlesEn = {
+    'fiqh.1': 'Purification Basics',
+    'fiqh.2': 'Prayer Conditions',
+    'fiqh.3': 'Intention and Timing',
+    'quran.1': 'Revelation Basics',
+    'quran.2': 'Surah Recognition',
+    'quran.3': 'Quran Themes',
+    'history.1': 'Seerah Timeline',
+    'history.2': 'Key Battles',
+    'history.3': 'Companions',
+    'culture.1': 'Islamic Manners',
+    'culture.2': 'Sacred Months',
+    'culture.3': 'Community Life',
+    'geography.1': 'Holy Cities',
+    'geography.2': 'Routes of Seerah',
+    'geography.3': 'Landmarks',
+    'mixed.1': 'Starter Mix',
+    'mixed.2': 'Steady Mix',
+    'mixed.3': 'Challenge Mix',
+  };
+
+  static const Map<String, String> _quizLevelTitlesAz = {
+    'fiqh.1': 'Taharetin Esaslari',
+    'fiqh.2': 'Namazin Sertleri',
+    'fiqh.3': 'Niyyet ve Vaxt',
+    'quran.1': 'Vehyin Esaslari',
+    'quran.2': 'Sure Tanima',
+    'quran.3': 'Quran Movzulari',
+    'history.1': 'Sire Xetti',
+    'history.2': 'Esas Doyusler',
+    'history.3': 'Sehabler',
+    'culture.1': 'Islami Edeblar',
+    'culture.2': 'Muqeddes Aylar',
+    'culture.3': 'Icma Heyati',
+    'geography.1': 'Muqeddes Seherler',
+    'geography.2': 'Sire Marşrutlari',
+    'geography.3': 'Mekanlar',
+    'mixed.1': 'Baslangic Qarisiq',
+    'mixed.2': 'Sabit Qarisiq',
+    'mixed.3': 'Challenge Qarisiq',
+  };
+
+  static const Map<String, String> _quizLevelTitlesTr = {
+    'fiqh.1': 'Taharet Temelleri',
+    'fiqh.2': 'Namaz Sartlari',
+    'fiqh.3': 'Niyet ve Vakit',
+    'quran.1': 'Vahiy Temelleri',
+    'quran.2': 'Sure Tanima',
+    'quran.3': 'Kuran Temalari',
+    'history.1': 'Siyer Cizgisi',
+    'history.2': 'Onemli Savaslar',
+    'history.3': 'Sahabeler',
+    'culture.1': 'Islami Adab',
+    'culture.2': 'Mukaddes Aylar',
+    'culture.3': 'Toplum Hayati',
+    'geography.1': 'Mukaddes Sehirler',
+    'geography.2': 'Siyer Guzergahlari',
+    'geography.3': 'Simgeler',
+    'mixed.1': 'Baslangic Karisik',
+    'mixed.2': 'Dengeli Karisik',
+    'mixed.3': 'Zorlayici Karisik',
+  };
+
+  static const Map<String, String> _quizLevelSummariesEn = {
+    'fiqh.1': 'Foundations of wudu and personal cleanliness.',
+    'fiqh.2': 'What must be in place before salah begins.',
+    'fiqh.3': 'Recognise intention and the correct prayer windows.',
+    'quran.1': 'Early Makkan revelation and first verses.',
+    'quran.2': 'Identify the themes of short surahs.',
+    'quran.3': 'Match key themes with their surahs.',
+    'history.1': 'Major moments from the Prophet\'s life.',
+    'history.2': 'Recognise turning points in early Islamic history.',
+    'history.3': 'Build familiarity with notable companions.',
+    'culture.1': 'Daily character and prophetic manners.',
+    'culture.2': 'Remember the sacred months and their meaning.',
+    'culture.3': 'Focus on life, service, and social ethics.',
+    'geography.1': 'Key cities linked to Islamic heritage.',
+    'geography.2': 'Trace the journeys connected to seerah.',
+    'geography.3': 'Recognise important places and sites.',
+    'mixed.1': 'A light round from several categories.',
+    'mixed.2': 'A balanced set to keep your pace steady.',
+    'mixed.3': 'A harder blend for confident players.',
+  };
+
+  static const Map<String, String> _quizLevelSummariesAz = {
+    'fiqh.1': 'Deste mazmunu ve temizliyin esaslari.',
+    'fiqh.2': 'Namazdan once yerine yeten sertler.',
+    'fiqh.3': 'Niyyeti ve dogru namaz vaxtlarini tani.',
+    'quran.1': 'Ilk Mekke vehyi ve ilk ayeler.',
+    'quran.2': 'Qisa surelerin movzularini tani.',
+    'quran.3': 'Esas movzulari surelerle bagla.',
+    'history.1': 'Peygemberin heyatindaki esas hadiselər.',
+    'history.2': 'Erken Islam tarixindeki donus novqteleri.',
+    'history.3': 'Meshur sehableri daha yaxsi tani.',
+    'culture.1': 'Gundelik edepler ve peygember exlaqi.',
+    'culture.2': 'Muqeddes aylarin manasini xatirla.',
+    'culture.3': 'Icma heyati ve sosial exlaq uzre fokuslan.',
+    'geography.1': 'Islam irsi ile bagli esas seherler.',
+    'geography.2': 'Sire ile bagli yolculuqlari izlə.',
+    'geography.3': 'Vacib mekan ve izleri tani.',
+    'mixed.1': 'Bir nece kateqoriyadan yüngul tur.',
+    'mixed.2': 'Ritmi qoruyan balansli sual desti.',
+    'mixed.3': 'Ozune guvenenler ucun cetin qarisiq.',
+  };
+
+  static const Map<String, String> _quizLevelSummariesTr = {
+    'fiqh.1': 'Abdest ve kisisel temizlik temelleri.',
+    'fiqh.2': 'Namaz baslamadan once gereken sartlar.',
+    'fiqh.3': 'Niyeti ve dogru namaz vakitlerini tani.',
+    'quran.1': 'Ilk Mekke vahyi ve ilk ayetler.',
+    'quran.2': 'Kisa surelerin temalarini tani.',
+    'quran.3': 'Ana temalari surelerle eslestir.',
+    'history.1': 'Peygamberin hayatindaki ana donemler.',
+    'history.2': 'Erken Islam tarihindeki donum noktalarini tani.',
+    'history.3': 'One cikan sahabeleri daha iyi tani.',
+    'culture.1': 'Gunluk adap ve nebevi ahlak.',
+    'culture.2': 'Mukaddes aylarin anlamini hatirla.',
+    'culture.3': 'Toplum, hizmet ve sosyal ahlaka odaklan.',
+    'geography.1': 'Islam mirasiyla bagli onemli sehirler.',
+    'geography.2': 'Siyerle bagli yolculuklari takip et.',
+    'geography.3': 'Onemli mekanlari ve izleri tani.',
+    'mixed.1': 'Birden cok kategoriden hafif bir tur.',
+    'mixed.2': 'Temponu koruyan dengeli bir set.',
+    'mixed.3': 'Kendine guvenenler icin daha zor bir karisim.',
+  };
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

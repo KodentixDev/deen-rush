@@ -329,6 +329,8 @@ class _DuelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return SizedBox(
       height: 50,
       child: Stack(
@@ -342,11 +344,11 @@ class _DuelHeader extends StatelessWidget {
               color: Color(0xFFFF7A67),
             ),
           ),
-          const Text(
-            'DEENRUSH',
+          Text(
+            strings.appName.toUpperCase(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 29,
               height: 1,
               fontWeight: FontWeight.w900,

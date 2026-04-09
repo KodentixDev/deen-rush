@@ -77,14 +77,14 @@ class CommunityScreen extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.84),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.play_circle_fill_rounded, size: 18),
-                      SizedBox(width: 8),
+                      const Icon(Icons.play_circle_fill_rounded, size: 18),
+                      const SizedBox(width: 8),
                       Text(
-                        'Join room',
-                        style: TextStyle(
+                        strings.text('communityJoinRoom'),
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                         ),
