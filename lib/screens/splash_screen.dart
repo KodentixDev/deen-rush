@@ -1,6 +1,5 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../l10n/app_strings.dart';
@@ -16,186 +15,188 @@ class SplashScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
-    final ambienceController = useAnimationController(
-      duration: const Duration(milliseconds: 2300),
+    final introController = useAnimationController(
+      duration: const Duration(milliseconds: 900),
+    );
+    final pulseController = useAnimationController(
+      duration: const Duration(milliseconds: 1800),
     );
     final loadingController = useAnimationController(
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 3400),
     );
 
     useEffect(
       () {
-        ambienceController.repeat(reverse: true);
+        introController.forward(from: 0);
+        pulseController.repeat(reverse: true);
         loadingController.forward(from: 0);
 
+        _playQuizIntroSound();
+
         return () {
-          ambienceController.stop();
+          pulseController.stop();
           loadingController.stop();
         };
       },
-      [ambienceController, loadingController],
+      [introController, pulseController, loadingController],
     );
 
     useEffect(
       () {
-        void handleStatus(AnimationStatus status) {
+        void listener(AnimationStatus status) {
           if (status == AnimationStatus.completed) {
             onCompleted();
           }
         }
 
-        loadingController.addStatusListener(handleStatus);
-        return () => loadingController.removeStatusListener(handleStatus);
+        loadingController.addStatusListener(listener);
+        return () => loadingController.removeStatusListener(listener);
       },
       [loadingController, onCompleted],
     );
 
-    final ambienceTick = useAnimation(ambienceController);
-    final loadingTick = useAnimation(loadingController);
-    final pulse = Curves.easeInOut.transform(ambienceTick);
-    final drift = math.sin(ambienceTick * math.pi * 2);
-    final progress = Curves.easeInOutCubic.transform(loadingTick);
-    final reveal = Curves.easeOutBack.transform(
-      (loadingTick / 0.32).clamp(0.0, 1.0),
-    );
-    final titleDrift = math.sin((ambienceTick * math.pi * 2) + 0.8);
-    final subtitleDrift = math.cos((ambienceTick * math.pi * 2) + 1.2);
+    final intro = Curves.easeOutCubic.transform(useAnimation(introController));
+    final pulse = Curves.easeInOut.transform(useAnimation(pulseController));
+    final progress = Curves.easeInOutCubic.transform(useAnimation(loadingController));
 
     return Scaffold(
       body: DecoratedBox(
         decoration: const BoxDecoration(
-          color: Color(0xFFF9F3EF),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF8E45FE),
+              Color(0xFF7E46FB),
+              Color(0xFF5F6DF6),
+            ],
+          ),
         ),
         child: Stack(
           children: [
-            Positioned(
-              left: -160 + (20 * drift),
-              top: -40,
-              child: const _BackdropGlow(
-                width: 430,
-                height: 520,
-                colors: [
-                  Color(0x33FF8D79),
-                  Color(0x11FFCFC6),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-            Positioned(
-              right: -150 - (14 * drift),
-              top: 220,
-              child: const _BackdropGlow(
-                width: 440,
-                height: 860,
-                colors: [
-                  Color(0x33B7A7FF),
-                  Color(0x1ADFD7FF),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-            Positioned(
-              left: -120 + (10 * drift),
-              bottom: -120 - (8 * drift),
-              child: Transform.rotate(
-                angle: -0.22 + (0.03 * drift),
-                child: Container(
-                  width: 320,
-                  height: 260,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDDF4E8),
-                    borderRadius: BorderRadius.circular(92),
-                  ),
-                ),
-              ),
-            ),
+            const Positioned.fill(child: _SplashBackground()),
             SafeArea(
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 430),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final width = constraints.maxWidth;
-                      final badgeSize =
-                          (width * 0.31).clamp(138.0, 164.0).toDouble();
-                      final titleSize =
-                          (width * 0.15).clamp(46.0, 60.0).toDouble();
-
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(28, 18, 28, 28),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height:
-                                  (constraints.maxHeight * 0.13) + (10 * (1 - reveal)),
-                            ),
-                            Transform.translate(
-                              offset: Offset(0, (-8 * pulse) + ((1 - reveal) * 18)),
-                              child: Transform.rotate(
-                                angle: 0.015 * drift,
-                                child: _SplashBadge(
-                                  size: badgeSize,
-                                  pulse: pulse,
-                                  drift: drift,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 26),
-                            Opacity(
-                              opacity: (0.35 + (0.65 * reveal)).clamp(0.0, 1.0),
-                              child: Transform.translate(
-                                offset: Offset(0, (20 * (1 - reveal)) - (3 * titleDrift)),
-                                child: Transform.scale(
-                                  scale: 0.95 + (0.05 * reveal),
-                                  child: Text(
-                                    'DEENRUSH',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: titleSize,
-                                      height: 0.92,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -2.4,
-                                      color: Colors.black,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 18, 28, 26),
+                    child: Column(
+                      children: [
+                        const Spacer(flex: 2),
+                        Transform.translate(
+                          offset: Offset(0, 24 * (1 - intro)),
+                          child: Opacity(
+                            opacity: intro,
+                            child: Transform.scale(
+                              scale: 0.92 + (0.08 * intro) + (0.01 * pulse),
+                              child: Text(
+                                strings.text('splashBrandWord'),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  height: 1,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFFFFD83D),
+                                  shadows: [
+                                    Shadow(
+                                      color: const Color(0xAA7A2C00),
+                                      offset: const Offset(0, 5),
+                                      blurRadius: 10 + (8 * pulse),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            Opacity(
-                              opacity: (0.2 + (0.8 * reveal)).clamp(0.0, 1.0),
-                              child: Transform.translate(
-                                offset: Offset(0, (14 * (1 - reveal)) - (2 * subtitleDrift)),
-                                child: Text(
-                                  strings.text('splashHeadline'),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 3,
-                                    color: Color(0xFF8E8890),
-                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Transform.translate(
+                          offset: Offset(0, 18 * (1 - intro)),
+                          child: Opacity(
+                            opacity: intro,
+                            child: Text(
+                              strings.text('splashMainTitle'),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 26,
+                                height: 1.08,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Opacity(
+                          opacity: 0.7 + (0.3 * intro),
+                          child: Text(
+                            strings.text('splashDescription'),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              height: 1.35,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xD9FFFFFF),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 34),
+                        Transform.translate(
+                          offset: Offset(0, -2 * pulse),
+                          child: _PlayNowButton(
+                            label: strings.text('splashPlayNow'),
+                            onTap: onCompleted,
+                          ),
+                        ),
+                        const Spacer(flex: 3),
+                        Text(
+                          strings.text('splashLoginWithText'),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xCCFFFFFF),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _LoginBubble(
+                              child: Text(
+                                'G',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF35A1FF),
                                 ),
                               ),
                             ),
-                            const Spacer(),
-                            Transform.translate(
-                              offset: Offset(0, -2 * pulse),
-                              child: _SplashProgressBar(
-                                progress: progress,
-                                pulse: pulse,
+                            SizedBox(width: 18),
+                            _LoginBubble(
+                              child: Icon(
+                                Icons.apple_rounded,
+                                size: 28,
+                                color: Color(0xFF35A1FF),
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            _LoadingCaption(
-                              pulse: pulse,
-                              drift: drift,
-                              message: strings.text('splashLoading'),
+                            SizedBox(width: 18),
+                            _LoginBubble(
+                              child: Icon(
+                                Icons.facebook_rounded,
+                                size: 28,
+                                color: Color(0xFF35A1FF),
+                              ),
                             ),
                           ],
                         ),
-                      );
-                    },
+                        const Spacer(flex: 2),
+                        _LoadingFooter(
+                          progress: progress,
+                          label: strings.text('splashLoadingNow'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -207,391 +208,264 @@ class SplashScreen extends HookWidget {
   }
 }
 
-class _BackdropGlow extends StatelessWidget {
-  const _BackdropGlow({
-    required this.width,
-    required this.height,
-    required this.colors,
-  });
-
-  final double width;
-  final double height;
-  final List<Color> colors;
+class _SplashBackground extends StatelessWidget {
+  const _SplashBackground();
 
   @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            colors: colors,
-            radius: 0.82,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Stack(
+        children: const [
+          _Ring(top: -84, right: -74, size: 280),
+          _Ring(top: 48, left: -210, size: 360),
+          _Glow(top: -10, right: -20, size: 200),
+          _Glow(bottom: -40, left: -28, size: 130),
+        ],
+      );
 }
 
-class _SplashBadge extends StatelessWidget {
-  const _SplashBadge({
+class _Ring extends StatelessWidget {
+  const _Ring({
+    this.top,
+    this.right,
+    this.bottom,
+    this.left,
     required this.size,
-    required this.pulse,
-    required this.drift,
   });
 
+  final double? top;
+  final double? right;
+  final double? bottom;
+  final double? left;
   final double size;
-  final double pulse;
-  final double drift;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size * 1.9,
-      height: size * 1.55,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            left: size * 0.02,
-            top: (size * 0.78) + (4 * drift),
-            child: const _GearBloom(),
-          ),
-          Positioned(
-            right: (size * 0.22) - (5 * drift),
-            top: (size * 0.12) - (3 * drift),
-            child: Transform.rotate(
-              angle: 0.08 * drift,
-              child: const _SparkleCluster(),
+  Widget build(BuildContext context) => Positioned(
+        top: top,
+        right: right,
+        bottom: bottom,
+        left: left,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.12),
+              width: 1,
             ),
           ),
-          Transform.rotate(
-            angle: -0.03 + (0.03 * pulse),
-            child: Transform.scale(
-              scale: 0.985 + (0.018 * pulse),
-              child: Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF7A67),
-                  borderRadius: BorderRadius.circular(size * 0.34),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0x22FF7A67),
-                      blurRadius: 18,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
+        ),
+      );
+}
+
+class _Glow extends StatelessWidget {
+  const _Glow({
+    this.top,
+    this.right,
+    this.bottom,
+    this.left,
+    required this.size,
+  });
+
+  final double? top;
+  final double? right;
+  final double? bottom;
+  final double? left;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+        top: top,
+        right: right,
+        bottom: bottom,
+        left: left,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.10),
+                Colors.white.withValues(alpha: 0),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _PlayNowButton extends StatelessWidget {
+  const _PlayNowButton({
+    required this.label,
+    required this.onTap,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(26),
+          child: Ink(
+            width: 170,
+            height: 52,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFDF3F),
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x558B5A00),
+                  blurRadius: 14,
+                  offset: Offset(0, 8),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.star_rounded,
-                    size: size * 0.56,
-                    color: Colors.white,
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Color(0xFF9A6100),
+                  size: 26,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF9A6100),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _LoginBubble extends StatelessWidget {
+  const _LoginBubble({
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 54,
+        height: 54,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x3329C5F6),
+              blurRadius: 12,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: child,
+      );
+}
+
+class _LoadingFooter extends StatelessWidget {
+  const _LoadingFooter({
+    required this.progress,
+    required this.label,
+  });
+
+  final double progress;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: double.infinity,
+              height: 10,
+              color: Colors.white.withValues(alpha: 0.18),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FractionallySizedBox(
+                  widthFactor: progress,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFFFFDF3F),
+                          Color(0xFFFFC92E),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GearBloom extends StatelessWidget {
-  const _GearBloom();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          ClipPath(
-            clipper: const _BurstClipper(points: 8, innerRadiusFactor: 0.73),
-            child: Container(
-              width: 48,
-              height: 48,
-              color: const Color(0xFF0A7A63),
-            ),
-          ),
-          Container(
-            width: 21,
-            height: 21,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-            ),
-            child: Center(
-              child: Container(
-                width: 9,
-                height: 9,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF0A7A63),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _Dot(active: progress > 0.2),
+              const SizedBox(width: 6),
+              _Dot(active: progress > 0.55),
+              const SizedBox(width: 6),
+              _Dot(active: progress > 0.85),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
-            ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SparkleCluster extends StatelessWidget {
-  const _SparkleCluster();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 46,
-      height: 38,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: const [
-          Positioned(
-            left: 0,
-            top: 6,
-            child: _Sparkle(size: 20),
-          ),
-          Positioned(
-            left: 20,
-            top: 0,
-            child: _Sparkle(size: 10),
-          ),
-          Positioned(
-            left: 22,
-            top: 18,
-            child: _Sparkle(size: 12),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Sparkle extends StatelessWidget {
-  const _Sparkle({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: const _BurstClipper(points: 4, innerRadiusFactor: 0.32),
-      child: Container(
-        width: size,
-        height: size,
-        color: const Color(0xFF6C50D8),
-      ),
-    );
-  }
-}
-
-class _SplashProgressBar extends StatelessWidget {
-  const _SplashProgressBar({
-    required this.progress,
-    required this.pulse,
-  });
-
-  final double progress;
-  final double pulse;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              const knobSize = 48.0;
-              final trackWidth = constraints.maxWidth;
-              final activeWidth = trackWidth * progress;
-              final knobLeft = (activeWidth - (knobSize / 2))
-                  .clamp(0.0, trackWidth - knobSize)
-                  .toDouble();
-
-              return SizedBox(
-                height: 64,
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Container(
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD9D5CE),
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 9,
-                      ),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: activeWidth.clamp(0.0, trackWidth - 16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFAA3F2C),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: knobLeft,
-                      child: Transform.translate(
-                        offset: Offset(0, -2 * pulse),
-                        child: Container(
-                          width: knobSize,
-                          height: knobSize,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 4,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.14),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.star_rounded,
-                              size: 22,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LoadingCaption extends StatelessWidget {
-  const _LoadingCaption({
-    required this.pulse,
-    required this.drift,
-    required this.message,
-  });
-
-  final double pulse;
-  final double drift;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _StatusDot(
-          color: const Color(0xFF0A7A63),
-          scale: 0.92 + (0.18 * pulse),
-        ),
-        const SizedBox(width: 16),
-        Text(
-          message,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.8,
-            color: Color(0xFF5B5B5B),
-          ),
-        ),
-        const SizedBox(width: 16),
-        _StatusDot(
-          color: const Color(0xFFB7462F),
-          scale: 0.92 + (0.18 * ((drift + 1) / 2)),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatusDot extends StatelessWidget {
-  const _StatusDot({
-    required this.color,
-    required this.scale,
-  });
-
-  final Color color;
-  final double scale;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: scale,
-      child: Container(
-        width: 14,
-        height: 14,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class _BurstClipper extends CustomClipper<Path> {
-  const _BurstClipper({
-    required this.points,
-    required this.innerRadiusFactor,
-  });
-
-  final int points;
-  final double innerRadiusFactor;
-
-  @override
-  Path getClip(Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final outerRadius = math.min(size.width, size.height) / 2;
-    final innerRadius = outerRadius * innerRadiusFactor;
-    final path = Path();
-
-    for (var i = 0; i < points * 2; i++) {
-      final radius = i.isEven ? outerRadius : innerRadius;
-      final angle = (-math.pi / 2) + ((math.pi / points) * i);
-      final point = Offset(
-        center.dx + (radius * math.cos(angle)),
-        center.dy + (radius * math.sin(angle)),
       );
+}
 
-      if (i == 0) {
-        path.moveTo(point.dx, point.dy);
-      } else {
-        path.lineTo(point.dx, point.dy);
-      }
-    }
+class _Dot extends StatelessWidget {
+  const _Dot({
+    required this.active,
+  });
 
-    path.close();
-    return path;
-  }
+  final bool active;
 
   @override
-  bool shouldReclip(_BurstClipper oldClipper) {
-    return points != oldClipper.points ||
-        innerRadiusFactor != oldClipper.innerRadiusFactor;
-  }
+  Widget build(BuildContext context) => AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 7,
+        height: 7,
+        decoration: BoxDecoration(
+          color: active
+              ? const Color(0xFFFFDF3F)
+              : Colors.white.withValues(alpha: 0.35),
+          shape: BoxShape.circle,
+        ),
+      );
+}
+
+void _playQuizIntroSound() {
+  Future<void>(() async {
+    try {
+      SystemSound.play(SystemSoundType.click);
+      await Future<void>.delayed(const Duration(milliseconds: 140));
+      SystemSound.play(SystemSoundType.click);
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      SystemSound.play(SystemSoundType.alert);
+    } catch (_) {
+      // System sounds are best-effort and can be unavailable on some devices.
+    }
+  });
 }

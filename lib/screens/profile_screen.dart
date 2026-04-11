@@ -1,584 +1,512 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_strings.dart';
+import '../data/friends_catalog.dart';
+import 'edit_profile_screen.dart';
+import 'friends_screen.dart';
+import 'language_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
     super.key,
-    required this.onOpenSettings,
+    required this.currentLocale,
+    required this.onLocaleChanged,
+    required this.onLogout,
+    required this.onBackRequested,
   });
 
-  final VoidCallback onOpenSettings;
+  final Locale currentLocale;
+  final ValueChanged<Locale> onLocaleChanged;
+  final VoidCallback onLogout;
+  final VoidCallback onBackRequested;
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _soundOn = true;
+  bool _musicOn = false;
+  final Set<String> _friendIds = {
+    'mr_dat',
+    'soham',
+    'darlene',
+    'gladys',
+    'debra',
+    'shane',
+    'victoria',
+    'aubrey',
+  };
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
-    final masteryCards = [
-      _MasteryCardData(
-        title: strings.text('history'),
-        score: '92',
-        icon: Icons.menu_book_rounded,
-        background: const Color(0xFFF8D6CC),
-        accent: const Color(0xFFB7462F),
-      ),
-      _MasteryCardData(
-        title: strings.text('general'),
-        score: '84',
-        icon: Icons.mosque_rounded,
-        background: const Color(0xFFDDF5E8),
-        accent: const Color(0xFF0A7A63),
-      ),
-      _MasteryCardData(
-        title: strings.text('culture'),
-        score: '68',
-        icon: Icons.castle_rounded,
-        background: const Color(0xFFE4DBFA),
-        accent: const Color(0xFF6C50D8),
-      ),
-      _MasteryCardData(
-        title: strings.text('travel'),
-        score: '45',
-        icon: Icons.public_rounded,
-        background: const Color(0xFFECE8E1),
-        accent: const Color(0xFF6F6A62),
-      ),
-    ];
 
-    final activities = [
-      _ActivityData(
-        title: strings.text('profileWonDuelVsOmar'),
-        time: strings.text('profileTwoMinutesAgo'),
-        xp: '+45 XP',
-        xpColor: const Color(0xFF0A7A63),
-        icon: Icons.trending_up_rounded,
-        iconColor: const Color(0xFF0A7A63),
-        iconBackground: const Color(0xFF93F0CB),
-      ),
-      _ActivityData(
-        title: strings.text('profileHistoryQuizPerfected'),
-        time: strings.text('profileOneHourAgo'),
-        xp: '+120 XP',
-        xpColor: const Color(0xFF0A7A63),
-        icon: Icons.quiz_rounded,
-        iconColor: const Color(0xFF6C50D8),
-        iconBackground: const Color(0xFFD9CCFF),
-      ),
-      _ActivityData(
-        title: strings.text('profileReachedLevel24'),
-        time: strings.text('profileThreeHoursAgo'),
-        xp: '+500 XP',
-        xpColor: const Color(0xFFB7462F),
-        icon: Icons.emoji_events_rounded,
-        iconColor: const Color(0xFFB7462F),
-        iconBackground: const Color(0xFFFFB7A7),
-      ),
-      _ActivityData(
-        title: strings.text('profileJoinedScholarlyTribe'),
-        time: strings.text('profileYesterday'),
-        xp: '+10 XP',
-        xpColor: const Color(0xFF242121),
-        icon: Icons.groups_rounded,
-        iconColor: const Color(0xFF5F5954),
-        iconBackground: const Color(0xFFF0ECE6),
-      ),
-      _ActivityData(
-        title: strings.text('profileLostDuelVsSara'),
-        time: strings.text('profileTwoDaysAgo'),
-        xp: '-15 XP',
-        xpColor: const Color(0xFFD34F71),
-        icon: Icons.close_rounded,
-        iconColor: const Color(0xFFBD446D),
-        iconBackground: const Color(0xFFF68BA5),
-      ),
-    ];
+    Future<void> openEdit() async {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const EditProfileScreen()),
+      );
+    }
+
+    Future<void> openLanguage() async {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => LanguageScreen(
+            currentLocale: widget.currentLocale,
+            onLocaleChanged: widget.onLocaleChanged,
+          ),
+        ),
+      );
+    }
+
+    Future<void> openFriends() async {
+      final updatedIds = await Navigator.of(context).push<Set<String>>(
+        MaterialPageRoute<Set<String>>(
+          builder: (_) => FriendsScreen(initialFriendIds: _friendIds),
+        ),
+      );
+
+      if (updatedIds != null) {
+        setState(() {
+          _friendIds
+            ..clear()
+            ..addAll(updatedIds);
+        });
+      }
+    }
+
+    Future<void> confirmLogout() async {
+      final shouldLogout = await showDialog<bool>(
+        context: context,
+        barrierColor: Colors.black.withValues(alpha: 0.46),
+        builder: (context) => _LogoutDialog(
+          title: strings.text('settingsLogout'),
+          message: strings.text('logoutMessage'),
+          cancel: strings.text('dialogCancel'),
+          ok: strings.text('dialogOk'),
+        ),
+      );
+      if (shouldLogout == true) {
+        widget.onLogout();
+      }
+    }
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF9F4EF),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 18, 24, 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      decoration: const BoxDecoration(color: Color(0xFF8E45FE)),
+      child: Stack(
+        children: [
+          const Positioned.fill(child: _ProfileBackground()),
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.star_rounded,
-                  size: 30,
-                  color: Color(0xFFFF7A67),
-                ),
-                const Spacer(),
-                Text(
-                  strings.appName.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.3,
-                    color: Colors.black,
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: onOpenSettings,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF6E9399),
-                    ),
-                    child: const Icon(
-                      Icons.settings_rounded,
-                      size: 24,
+                _BackCircle(onTap: widget.onBackRequested),
+                const SizedBox(height: 14),
+                const Center(child: _AvatarCard()),
+                const SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    strings.text('homeGreetingName'),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 28),
-            Center(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 132,
-                    height: 132,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF83EBD5),
-                          Color(0xFFF78FA0),
-                          Color(0xFF9A8FFF),
-                        ],
-                      ),
-                      border: Border.all(color: Colors.white, width: 4),
-                    ),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF284C4E),
-                      ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        size: 82,
-                        color: Color(0xFFB9E5E1),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -4,
-                    bottom: -2,
-                    child: GestureDetector(
-                      onTap: onOpenSettings,
-                      child: Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF86F8C8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.10),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-            const Center(
-              child: Text(
-                'Zubair Ahmad',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF242121),
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Center(
-              child: Text(
-                '${strings.text('profileLevel24')} • ${strings.text('profileMasterScholar')}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF787373),
-                ),
-              ),
-            ),
-            const SizedBox(height: 26),
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    value: '12.4k',
-                    label: strings.text('profileTotalXp'),
-                    valueColor: const Color(0xFFB7462F),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _StatCard(
-                    value: '842',
-                    label: strings.text('profileCorrect'),
-                    valueColor: const Color(0xFF0A7A63),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _StatCard(
-                    value: '76%',
-                    label: strings.text('profileWinRate'),
-                    valueColor: const Color(0xFF6C50D8),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 28),
-            Row(
-              children: [
-                Expanded(
+                const SizedBox(height: 4),
+                Center(
                   child: Text(
-                    strings.text('profileCategoryMastery'),
-                    style: const TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF242121),
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    strings.seeAll,
+                    strings.text('homePlayEnjoy'),
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFFB7462F),
+                      color: Color(0xD9FFFFFF),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 22),
+                _Panel(
+                  child: _ActionTile(
+                    icon: Icons.group_outlined,
+                    title: strings.text('profileFriends'),
+                    onTap: openFriends,
+                    trailing: _FriendStrip(friendIds: _friendIds),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _Panel(
+                  child: _ActionTile(
+                    icon: Icons.mode_edit_outline_rounded,
+                    title: strings.text('profileEditProfile'),
+                    onTap: openEdit,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _Panel(
+                  child: Column(
+                    children: [
+                      _ActionTile(
+                        icon: Icons.language_rounded,
+                        title: strings.language,
+                        value: strings.localeLabel(widget.currentLocale),
+                        onTap: openLanguage,
+                      ),
+                      const Divider(height: 1),
+                      _SwitchTile(
+                        icon: Icons.volume_up_outlined,
+                        title: strings.text('profileEffectSound'),
+                        value: _soundOn,
+                        onChanged: () => setState(() => _soundOn = !_soundOn),
+                      ),
+                      const Divider(height: 1),
+                      _SwitchTile(
+                        icon: Icons.music_note_rounded,
+                        title: strings.text('settingsMusic'),
+                        value: _musicOn,
+                        onChanged: () => setState(() => _musicOn = !_musicOn),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _Panel(
+                  child: Column(
+                    children: [
+                      _ActionTile(icon: Icons.description_outlined, title: strings.terms),
+                      const Divider(height: 1),
+                      _ActionTile(icon: Icons.shield_outlined, title: strings.privacy),
+                      const Divider(height: 1),
+                      _ActionTile(
+                        icon: Icons.logout_rounded,
+                        title: strings.text('settingsLogout'),
+                        onTap: confirmLogout,
+                        trailing: const SizedBox.shrink(),
+                      ),
+                      const Divider(height: 1),
+                      _ActionTile(
+                        icon: Icons.delete_outline_rounded,
+                        title: strings.text('profileCleanResource'),
+                        titleColor: const Color(0xFFFF6B6B),
+                        iconColor: const Color(0xFFFF6B6B),
+                        trailing: const SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final itemWidth = (constraints.maxWidth - 14) / 2;
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-                return Wrap(
-                  spacing: 14,
-                  runSpacing: 14,
-                  children: masteryCards
-                      .map(
-                        (item) => SizedBox(
-                          width: itemWidth,
-                          child: _MasteryCard(item: item),
-                        ),
-                      )
-                      .toList(),
-                );
-              },
-            ),
-            const SizedBox(height: 28),
-            Text(
-              strings.text('profileRecentActivity'),
-              style: const TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF242121),
+class _ProfileBackground extends StatelessWidget {
+  const _ProfileBackground();
+
+  @override
+  Widget build(BuildContext context) => Stack(children: const [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF8E45FE), Color(0xFF6E68F8)],
               ),
             ),
-            const SizedBox(height: 14),
-            ...activities.map(
-              (activity) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _ActivityCard(activity: activity),
-              ),
+          ),
+        ),
+        _Glow(top: -40, right: -54, size: 200),
+        _Glow(bottom: -30, left: -32, size: 150),
+      ]);
+}
+
+class _Glow extends StatelessWidget {
+  const _Glow({this.top, this.right, this.bottom, this.left, required this.size});
+  final double? top;
+  final double? right;
+  final double? bottom;
+  final double? left;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+        top: top,
+        right: right,
+        bottom: bottom,
+        left: left,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.08),
+                Colors.white.withValues(alpha: 0),
+              ],
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onOpenSettings,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF86F8C8),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  shadowColor: Colors.black,
-                  elevation: 8,
+          ),
+        ),
+      );
+}
+
+class _BackCircle extends StatelessWidget {
+  const _BackCircle({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.14),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+        ),
+      );
+}
+
+class _AvatarCard extends StatelessWidget {
+  const _AvatarCard();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 106,
+        height: 106,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Icon(Icons.face_3_rounded, size: 60, color: Color(0xFFFFD053)),
+      );
+}
+
+class _Panel extends StatelessWidget {
+  const _Panel({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFE7DDF9),
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: child,
+      );
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
+    required this.title,
+    this.onTap,
+    this.value,
+    this.trailing,
+    this.titleColor = const Color(0xFF2D2A39),
+    this.iconColor = const Color(0xFF2D2A39),
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback? onTap;
+  final String? value;
+  final Widget? trailing;
+  final Color titleColor;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          child: Row(
+            children: [
+              Icon(icon, size: 22, color: iconColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: titleColor),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.settings_rounded, size: 24),
-                    const SizedBox(width: 12),
-                    Flexible(
-                      child: Text(
-                        strings.text('profileEditSettings'),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.4,
-                        ),
-                      ),
-                    ),
-                  ],
+              ),
+              if (value != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Text(value!, style: const TextStyle(fontSize: 15, color: Color(0xFF68637D))),
+                ),
+              trailing ?? const Icon(Icons.chevron_right_rounded, color: Color(0xFF8B8897)),
+            ],
+          ),
+        ),
+      );
+}
+
+class _SwitchTile extends StatelessWidget {
+  const _SwitchTile({required this.icon, required this.title, required this.value, required this.onChanged});
+  final IconData icon;
+  final String title;
+  final bool value;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: const Color(0xFF2D2A39)),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF2D2A39)))),
+            GestureDetector(
+              onTap: onChanged,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 40,
+                height: 24,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: value ? const Color(0xFF6F36F4) : const Color(0xFFC9C9C9),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: AnimatedAlign(
+                  duration: const Duration(milliseconds: 180),
+                  alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                  child: const DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    child: SizedBox(width: 18, height: 18),
+                  ),
                 ),
               ),
             ),
           ],
         ),
+      );
+}
+
+class _FriendStrip extends StatelessWidget {
+  const _FriendStrip({
+    required this.friendIds,
+  });
+
+  final Set<String> friendIds;
+
+  @override
+  Widget build(BuildContext context) {
+    final visibleFriends = friendsCatalog
+        .where((friend) => friendIds.contains(friend.id))
+        .take(4)
+        .toList();
+    final remainingCount = friendIds.length - visibleFriends.length;
+
+    return SizedBox(
+      width: 128,
+      height: 28,
+      child: Stack(
+        children: [
+          if (remainingCount > 0)
+            Positioned(
+              right: 0,
+              child: _FriendBubble(label: '+$remainingCount'),
+            ),
+          ...List.generate(
+            visibleFriends.length,
+            (index) {
+              final friend = visibleFriends[index];
+              final right = remainingCount > 0
+                  ? 24.0 * (index + 1)
+                  : 24.0 * index;
+              return Positioned(
+                right: right,
+                child: _FriendBubble(
+                  icon: friend.icon,
+                  color: friend.avatarColor,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.value,
-    required this.label,
-    required this.valueColor,
-  });
-
-  final String value;
-  final String label;
-  final Color valueColor;
+class _FriendBubble extends StatelessWidget {
+  const _FriendBubble({this.icon, this.label, this.color = Colors.white});
+  final IconData? icon;
+  final String? label;
+  final Color color;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x1AC0B8B0),
-            blurRadius: 14,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: valueColor,
+  Widget build(BuildContext context) => Container(
+        width: 28,
+        height: 28,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: Border.all(color: const Color(0xFF8E45FE), width: 2)),
+        alignment: Alignment.center,
+        child: label != null
+            ? Text(label!, style: const TextStyle(fontSize: 10, color: Color(0xFF6F36F4), fontWeight: FontWeight.w700))
+            : Icon(icon, size: 16, color: const Color(0xFF6F36F4)),
+      );
+}
+
+class _LogoutDialog extends StatelessWidget {
+  const _LogoutDialog({required this.title, required this.message, required this.cancel, required this.ok});
+  final String title;
+  final String message;
+  final String cancel;
+  final String ok;
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(18, 24, 18, 20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF8E45FE), Color(0xFF6E68F8)],
             ),
+            borderRadius: BorderRadius.circular(24),
           ),
-          const SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF7E7774),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white)),
+            const SizedBox(height: 14),
+            Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 15, color: Color(0xE8FFFFFF))),
+            const SizedBox(height: 20),
+            Row(children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF2EA0FF),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  ),
+                  child: Text(cancel),
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MasteryCard extends StatelessWidget {
-  const _MasteryCard({required this.item});
-
-  final _MasteryCardData item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      decoration: BoxDecoration(
-        color: item.background,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: item.accent.withValues(alpha: 0.18),
-            ),
-            child: Icon(item.icon, color: item.accent),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    item.title.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: item.accent,
-                    ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFDF3F),
+                    foregroundColor: const Color(0xFF8D5A00),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
+                  child: Text(ok),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  item.score,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF242121),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityCard extends StatelessWidget {
-  const _ActivityCard({required this.activity});
-
-  final _ActivityData activity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: activity.iconBackground,
-            ),
-            child: Icon(
-              activity.icon,
-              size: 20,
-              color: activity.iconColor,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activity.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF242121),
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  activity.time,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF7E7774),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            activity.xp,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w900,
-              color: activity.xpColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MasteryCardData {
-  const _MasteryCardData({
-    required this.title,
-    required this.score,
-    required this.icon,
-    required this.background,
-    required this.accent,
-  });
-
-  final String title;
-  final String score;
-  final IconData icon;
-  final Color background;
-  final Color accent;
-}
-
-class _ActivityData {
-  const _ActivityData({
-    required this.title,
-    required this.time,
-    required this.xp,
-    required this.xpColor,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBackground,
-  });
-
-  final String title;
-  final String time;
-  final String xp;
-  final Color xpColor;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBackground;
+              ),
+            ]),
+          ]),
+        ),
+      );
 }

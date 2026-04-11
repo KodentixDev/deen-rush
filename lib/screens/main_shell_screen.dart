@@ -6,7 +6,6 @@ import 'duel_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'ranks_screen.dart';
-import 'settings_screen.dart';
 
 class MainShellScreen extends HookWidget {
   const MainShellScreen({
@@ -28,16 +27,6 @@ class MainShellScreen extends HookWidget {
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final currentIndex = useState(0);
-    final isSettingsOpen = useState(false);
-
-    final pages = [
-      const HomeScreen(),
-      const DuelScreen(),
-      const RanksScreen(),
-      ProfileScreen(
-        onOpenSettings: () => isSettingsOpen.value = true,
-      ),
-    ];
 
     final items = [
       _ShellNavItem(
@@ -45,11 +34,11 @@ class MainShellScreen extends HookWidget {
         label: strings.text('navHome'),
       ),
       _ShellNavItem(
-        icon: Icons.sports_martial_arts_rounded,
+        icon: Icons.auto_awesome_mosaic_rounded,
         label: strings.text('navDuel'),
       ),
       _ShellNavItem(
-        icon: Icons.bar_chart_rounded,
+        icon: Icons.workspace_premium_rounded,
         label: strings.text('navRanks'),
       ),
       _ShellNavItem(
@@ -58,43 +47,53 @@ class MainShellScreen extends HookWidget {
       ),
     ];
 
+    final page = switch (currentIndex.value) {
+      0 => const HomeScreen(),
+      1 => const DuelScreen(),
+      2 => const RanksScreen(),
+      _ => ProfileScreen(
+          currentLocale: currentLocale,
+          onLocaleChanged: onLocaleChanged,
+          onLogout: onLogout,
+          onBackRequested: () => currentIndex.value = 0,
+        ),
+    };
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final showNav = currentIndex.value != 3;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F4EF),
+      backgroundColor:
+          currentIndex.value == 0 ||
+              currentIndex.value == 2 ||
+              currentIndex.value == 3
+          ? const Color(0xFF8E45FE)
+          : const Color(0xFFF9F4EF),
       body: SafeArea(
         bottom: false,
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 430),
-            child: Column(
+            child: Stack(
               children: [
-                Expanded(
-                  child: currentIndex.value == 3 && isSettingsOpen.value
-                      ? SettingsScreen(
-                          currentLocale: currentLocale,
-                          themeMode: themeMode,
-                          onLocaleChanged: onLocaleChanged,
-                          onThemeModeChanged: onThemeModeChanged,
-                          onBackRequested: () => isSettingsOpen.value = false,
-                          onLogout: onLogout,
-                        )
-                      : IndexedStack(
-                          index: currentIndex.value,
-                          children: pages,
+                Positioned.fill(
+                  child: currentIndex.value == 0 || !showNav
+                      ? page
+                      : Padding(
+                          padding: EdgeInsets.only(bottom: 96 + bottomInset),
+                          child: page,
                         ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
-                  child: _SketchBottomNav(
-                    items: items,
-                    currentIndex: currentIndex.value,
-                    onTap: (index) {
-                      currentIndex.value = index;
-                      if (index != 3) {
-                        isSettingsOpen.value = false;
-                      }
-                    },
+                if (showNav)
+                  Positioned(
+                    left: 18,
+                    right: 18,
+                    bottom: 12 + bottomInset,
+                    child: _SketchBottomNav(
+                      items: items,
+                      currentIndex: currentIndex.value,
+                      onTap: (index) => currentIndex.value = index,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -117,98 +116,75 @@ class _SketchBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: List.generate(
-        items.length,
-        (index) {
-          final item = items[index];
-          final isSelected = index == currentIndex;
+    return Container(
+      height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xCC8B63FF),
+        borderRadius: BorderRadius.circular(34),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x40381678),
+            blurRadius: 28,
+            offset: Offset(0, 16),
+          ),
+        ],
+      ),
+      child: Row(
+        children: List.generate(
+          items.length,
+          (index) {
+            final item = items[index];
+            final isSelected = index == currentIndex;
 
-          if (isSelected) {
-            return GestureDetector(
-              onTap: () => onTap(index),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 78,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF7A67),
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x22FF7A67),
-                      blurRadius: 12,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      item.icon,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                    const SizedBox(height: 1),
-                    SizedBox(
-                      width: 54,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          item.label,
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+            return Expanded(
+              flex: isSelected ? 2 : 1,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () => onTap(index),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFFF6F2FF)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: isSelected
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              item.icon,
+                              size: 20,
+                              color: const Color(0xFF7A53F9),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                item.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF7A53F9),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Icon(
+                          item.icon,
+                          size: 22,
+                          color: Colors.white.withValues(alpha: 0.88),
                         ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
-          }
-
-          return InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () => onTap(index),
-            child: SizedBox(
-              width: 68,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    item.icon,
-                    size: 25,
-                    color: const Color(0xFF4F4B4B),
-                  ),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    width: 68,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        item.label,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF4F4B4B),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
