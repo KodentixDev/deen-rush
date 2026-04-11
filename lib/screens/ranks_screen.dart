@@ -42,36 +42,6 @@ class _RanksScreenState extends State<RanksScreen> {
     ),
   ];
 
-  static const _allTimeTopThree = [
-    _WinnerEntry(
-      rank: 2,
-      name: 'Victoria',
-      score: '18840',
-      accent: Color(0xFF8D73FF),
-      medal: Color(0xFFD8D8E6),
-      avatarColor: Color(0xFFFB7EAD),
-      icon: Icons.face_5_rounded,
-    ),
-    _WinnerEntry(
-      rank: 1,
-      name: 'Mr.Dat',
-      score: '21400',
-      accent: Color(0xFFFFD83D),
-      medal: Color(0xFFFFD83D),
-      avatarColor: Color(0xFFFFE1A0),
-      icon: Icons.sentiment_very_satisfied_rounded,
-    ),
-    _WinnerEntry(
-      rank: 3,
-      name: 'Saris',
-      score: '17600',
-      accent: Color(0xFFFFB45B),
-      medal: Color(0xFFFFB45B),
-      avatarColor: Color(0xFFA1B4FF),
-      icon: Icons.person_rounded,
-    ),
-  ];
-
   static const _weeklyRankings = [
     _RankingEntry(
       rank: 4,
@@ -92,14 +62,14 @@ class _RanksScreenState extends State<RanksScreen> {
       name: 'Allison Vaccaro',
       points: '9888',
       avatarColor: Color(0xFFD9D7FF),
-      icon: Icons.face_6_rounded,
+      icon: Icons.face_3_rounded,
     ),
     _RankingEntry(
       rank: 7,
       name: 'Sana Noura',
       points: '9750',
       avatarColor: Color(0xFFFC9CC2),
-      icon: Icons.face_3_rounded,
+      icon: Icons.face_5_rounded,
     ),
     _RankingEntry(
       rank: 8,
@@ -113,50 +83,64 @@ class _RanksScreenState extends State<RanksScreen> {
       name: 'Aubrey Khan',
       points: '9415',
       avatarColor: Color(0xFFF7CD7A),
-      icon: Icons.face_5_rounded,
+      icon: Icons.face_6_rounded,
     ),
   ];
 
   static const _allTimeRankings = [
     _RankingEntry(
-      rank: 4,
-      name: 'Layla Monroe',
-      points: '16220',
-      avatarColor: Color(0xFFF3BA86),
-      icon: Icons.face_3_rounded,
+      rank: 1,
+      name: 'Brandon Siphron',
+      points: '9888',
+      avatarColor: Color(0xFFF7B290),
+      icon: Icons.person_rounded,
     ),
     _RankingEntry(
-      rank: 5,
+      rank: 2,
       name: 'Roger Donin',
-      points: '15980',
+      points: '9888',
       avatarColor: Color(0xFFF0B36A),
       icon: Icons.face_4_rounded,
     ),
     _RankingEntry(
-      rank: 6,
+      rank: 3,
       name: 'Allison Vaccaro',
-      points: '15670',
+      points: '9888',
       avatarColor: Color(0xFFD9D7FF),
-      icon: Icons.face_6_rounded,
-    ),
-    _RankingEntry(
-      rank: 7,
-      name: 'Noah Rahman',
-      points: '15140',
-      avatarColor: Color(0xFF95CBFF),
-      icon: Icons.person_rounded,
-    ),
-    _RankingEntry(
-      rank: 8,
-      name: 'Debra Malik',
-      points: '14880',
-      avatarColor: Color(0xFFFFCC8E),
       icon: Icons.face_5_rounded,
     ),
     _RankingEntry(
-      rank: 9,
+      rank: 4,
+      name: 'Jordyn Mango',
+      points: '9888',
+      avatarColor: Color(0xFFD6DEF8),
+      icon: Icons.emoji_people_rounded,
+    ),
+    _RankingEntry(
+      rank: 5,
+      name: 'Haylie Herwitz',
+      points: '9888',
+      avatarColor: Color(0xFFEFEFFF),
+      icon: Icons.person_2_rounded,
+    ),
+    _RankingEntry(
+      rank: 6,
+      name: 'Allison Donin',
+      points: '9888',
+      avatarColor: Color(0xFF97E3D8),
+      icon: Icons.accessibility_new_rounded,
+    ),
+    _RankingEntry(
+      rank: 7,
+      name: 'Anika Geidt',
+      points: '9888',
+      avatarColor: Color(0xFFF1F1FF),
+      icon: Icons.face_6_rounded,
+    ),
+    _RankingEntry(
+      rank: 8,
       name: 'Aubrey Khan',
-      points: '14550',
+      points: '9888',
       avatarColor: Color(0xFFF7CD7A),
       icon: Icons.face_2_rounded,
     ),
@@ -165,8 +149,8 @@ class _RanksScreenState extends State<RanksScreen> {
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
-    final topThree = _selectedPeriod == 0 ? _weeklyTopThree : _allTimeTopThree;
-    final rankings = _selectedPeriod == 0 ? _weeklyRankings : _allTimeRankings;
+    final isAllTime = _selectedPeriod == 1;
+    final rankings = isAllTime ? _allTimeRankings : _weeklyRankings;
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -183,45 +167,64 @@ class _RanksScreenState extends State<RanksScreen> {
       child: Stack(
         children: [
           const Positioned.fill(child: _RanksBackground()),
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  strings.text('homeLeaderboard'),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        strings.text('homeLeaderboard'),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      _PeriodSwitcher(
+                        weeklyLabel: strings.text('rankPeriodWeekly'),
+                        allTimeLabel: strings.text('rankPeriodAllTime'),
+                        selectedIndex: _selectedPeriod,
+                        onChanged: (index) =>
+                            setState(() => _selectedPeriod = index),
+                      ),
+                      if (!isAllTime) ...[
+                        const SizedBox(height: 14),
+                        _InsightCard(
+                          rankLabel: '#4',
+                          message: _insightMessage(strings.locale.languageCode),
+                        ),
+                        const SizedBox(height: 18),
+                        _PodiumSection(players: _weeklyTopThree),
+                        const SizedBox(height: 14),
+                      ] else
+                        const SizedBox(height: 20),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          itemCount: rankings.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final entry = rankings[index];
+                            return _RankTile(
+                              entry: entry,
+                              allTimeMode: isAllTime,
+                              pointsLabel:
+                                  _pointsLabel(strings.locale.languageCode),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 18),
-                _PeriodSwitcher(
-                  weeklyLabel: strings.text('rankPeriodWeekly'),
-                  allTimeLabel: strings.text('rankPeriodAllTime'),
-                  selectedIndex: _selectedPeriod,
-                  onChanged: (index) => setState(() => _selectedPeriod = index),
-                ),
-                const SizedBox(height: 14),
-                _InsightCard(
-                  rankLabel: '#4',
-                  message: _insightMessage(strings.locale.languageCode),
-                ),
-                const SizedBox(height: 18),
-                _PodiumSection(players: topThree),
-                const SizedBox(height: 14),
-                ...rankings.map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _RankTile(
-                      entry: entry,
-                      pointsLabel: _pointsLabel(strings.locale.languageCode),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -232,13 +235,13 @@ class _RanksScreenState extends State<RanksScreen> {
     if (_selectedPeriod == 0) {
       switch (languageCode) {
         case 'az':
-          return 'Sen oyuncularin 60%-den daha yaxsi oynayirsan!';
+          return 'Oyunçuların 60%-dən daha yaxşı gedirsən!';
         case 'tr':
-          return 'Oyuncularin %60\'indan daha iyi gidiyorsun!';
+          return 'Oyuncuların %60\'ından daha iyi gidiyorsun!';
         case 'ru':
-          return 'Ty igraesh luchshe, chem 60% igrokov!';
+          return 'Ты играешь лучше, чем 60% игроков!';
         case 'ar':
-          return 'anta afdal min 60% min al-laibin!';
+          return 'أنت أفضل من 60٪ من اللاعبين!';
         default:
           return 'You are doing better than 60% of other players!';
       }
@@ -246,13 +249,13 @@ class _RanksScreenState extends State<RanksScreen> {
 
     switch (languageCode) {
       case 'az':
-        return 'Sen butun oyuncularin 82%-den daha yaxsi oynayirsan!';
+        return 'Bütün oyunçuların 82%-dən daha yaxşı gedirsən!';
       case 'tr':
-        return 'Tum oyuncularin %82\'sinden daha iyi gidiyorsun!';
+        return 'Tüm oyuncuların %82\'sinden daha iyi gidiyorsun!';
       case 'ru':
-        return 'Ty igraesh luchshe, chem 82% vseh igrokov!';
+        return 'Ты играешь лучше, чем 82% всех игроков!';
       case 'ar':
-        return 'anta afdal min 82% min jami al-laibin!';
+        return 'أنت أفضل من 82٪ من جميع اللاعبين!';
       default:
         return 'You are doing better than 82% of all players!';
     }
@@ -265,9 +268,9 @@ class _RanksScreenState extends State<RanksScreen> {
       case 'tr':
         return 'puan';
       case 'ru':
-        return 'ochkov';
+        return 'очков';
       case 'ar':
-        return 'nuqta';
+        return 'نقطة';
       default:
         return 'points';
     }
@@ -511,64 +514,72 @@ class _PodiumSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 206,
+      height: 232,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          final columnWidth = (width - 20) / 3;
+          const gap = 10.0;
+          final centerWidth = constraints.maxWidth * 0.36;
+          final sideWidth = (constraints.maxWidth - centerWidth - (gap * 2)) / 2;
+          final leftX = 0.0;
+          final centerX = sideWidth + gap;
+          final rightX = centerX + centerWidth + gap;
 
           return Stack(
             clipBehavior: Clip.none,
             children: [
               Positioned(
-                left: 0,
+                left: leftX,
                 bottom: 0,
-                width: columnWidth,
-                child: _PodiumBlock(
+                width: sideWidth,
+                child: const _PodiumPedestal(
                   number: '2',
-                  height: 98,
-                  topColor: const Color(0xFFCDBEFF),
-                  bottomColor: const Color(0xFFA984FF),
+                  height: 92,
+                  topColor: Color(0xFFD8CAFF),
+                  bottomColor: Color(0xFFB08EFF),
+                  capInset: 6,
                 ),
               ),
               Positioned(
-                left: columnWidth - 2,
+                left: centerX,
                 bottom: 0,
-                width: columnWidth + 4,
-                child: _PodiumBlock(
+                width: centerWidth,
+                child: const _PodiumPedestal(
                   number: '1',
-                  height: 132,
-                  topColor: const Color(0xFFE7DBFF),
-                  bottomColor: const Color(0xFFB998FF),
+                  height: 126,
+                  topColor: Color(0xFFEDE3FF),
+                  bottomColor: Color(0xFFC19FFF),
+                  capInset: 16,
+                  capHeight: 16,
                 ),
               ),
               Positioned(
-                right: 0,
+                left: rightX,
                 bottom: 0,
-                width: columnWidth,
-                child: _PodiumBlock(
+                width: sideWidth,
+                child: const _PodiumPedestal(
                   number: '3',
-                  height: 84,
-                  topColor: const Color(0xFFC1B4FF),
-                  bottomColor: const Color(0xFF9E84FF),
+                  height: 92,
+                  topColor: Color(0xFFD7CAFF),
+                  bottomColor: Color(0xFFA884FF),
+                  capInset: 6,
                 ),
               ),
               Positioned(
-                left: 8,
-                bottom: 88,
-                width: columnWidth - 8,
+                left: leftX,
+                bottom: 112,
+                width: sideWidth,
                 child: _WinnerBadge(player: players[0], compact: true),
               ),
               Positioned(
-                left: columnWidth - 18,
-                bottom: 118,
-                width: columnWidth + 36,
+                left: centerX,
+                bottom: 142,
+                width: centerWidth,
                 child: _WinnerBadge(player: players[1]),
               ),
               Positioned(
-                right: 8,
-                bottom: 78,
-                width: columnWidth - 8,
+                left: rightX,
+                bottom: 112,
+                width: sideWidth,
                 child: _WinnerBadge(player: players[2], compact: true),
               ),
             ],
@@ -579,30 +590,43 @@ class _PodiumSection extends StatelessWidget {
   }
 }
 
-class _PodiumBlock extends StatelessWidget {
-  const _PodiumBlock({
+class _PodiumPedestal extends StatelessWidget {
+  const _PodiumPedestal({
     required this.number,
     required this.height,
     required this.topColor,
     required this.bottomColor,
+    this.capInset = 8,
+    this.capHeight = 12,
   });
 
   final String number;
   final double height;
   final Color topColor;
   final Color bottomColor;
+  final double capInset;
+  final double capHeight;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          height: 14,
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.94),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+        ClipPath(
+          clipper: _PodiumCapClipper(),
+          child: Container(
+            height: capHeight,
+            margin: EdgeInsets.symmetric(horizontal: capInset),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.97),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x22FFFFFF),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
           ),
         ),
         Container(
@@ -613,7 +637,7 @@ class _PodiumBlock extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [topColor, bottomColor],
             ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x201B0B52),
@@ -625,8 +649,8 @@ class _PodiumBlock extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             number,
-            style: const TextStyle(
-              fontSize: 58,
+            style: TextStyle(
+              fontSize: number == '1' ? 60 : 56,
               height: 0.95,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -649,12 +673,7 @@ class _WinnerBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatarSize = compact ? 62.0 : 78.0;
-    final nameStyle = TextStyle(
-      fontSize: compact ? 14 : 16,
-      fontWeight: FontWeight.w800,
-      color: Colors.white,
-    );
+    final avatarSize = compact ? 62.0 : 82.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -719,10 +738,22 @@ class _WinnerBadge extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text(player.name, style: nameStyle),
+        Text(
+          player.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: compact ? 13.5 : 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 4),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 10 : 12,
+            vertical: 4,
+          ),
           decoration: BoxDecoration(
             color: player.accent,
             borderRadius: BorderRadius.circular(12),
@@ -733,7 +764,7 @@ class _WinnerBadge extends StatelessWidget {
               fontSize: compact ? 10 : 11,
               fontWeight: FontWeight.w700,
               color: compact
-                  ? Colors.white.withValues(alpha: 0.90)
+                  ? Colors.white.withValues(alpha: 0.92)
                   : const Color(0xFF7B5A00),
             ),
           ),
@@ -743,21 +774,56 @@ class _WinnerBadge extends StatelessWidget {
   }
 }
 
+class _PodiumCapClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width * 0.12, size.height);
+    path.lineTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width * 0.88, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
 class _RankTile extends StatelessWidget {
   const _RankTile({
     required this.entry,
+    required this.allTimeMode,
     required this.pointsLabel,
   });
 
   final _RankingEntry entry;
+  final bool allTimeMode;
   final String pointsLabel;
 
   @override
   Widget build(BuildContext context) {
+    final badgeFill = switch (entry.rank) {
+      1 => const Color(0xFFFFD83D),
+      2 => const Color(0xFFD7D8E4),
+      3 => const Color(0xFFFFB45B),
+      _ => Colors.transparent,
+    };
+    final badgeTextColor = entry.rank <= 3
+        ? const Color(0xFF6B5200)
+        : Colors.white.withValues(alpha: 0.90);
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.11),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withValues(alpha: 0.13),
+            Colors.white.withValues(alpha: 0.08),
+          ],
+        ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: const [
           BoxShadow(
@@ -776,22 +842,24 @@ class _RankTile extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.52)),
+              color: badgeFill,
+              border: Border.all(
+                color: entry.rank <= 3
+                    ? Colors.transparent
+                    : Colors.white.withValues(alpha: 0.52),
+              ),
             ),
             child: Text(
               '${entry.rank}',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Colors.white.withValues(alpha: 0.90),
+                color: badgeTextColor,
               ),
             ),
           ),
           const SizedBox(width: 12),
-          _AvatarChip(
-            color: entry.avatarColor,
-            icon: entry.icon,
-          ),
+          _AvatarChip(color: entry.avatarColor, icon: entry.icon),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -801,8 +869,8 @@ class _RankTile extends StatelessWidget {
                   entry.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: allTimeMode ? 17 : 18,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),

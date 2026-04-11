@@ -353,48 +353,87 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 46,
-        padding: const EdgeInsets.all(4),
+        height: 60,
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: const Color(0x663E158A),
-          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white.withValues(alpha: 0.12),
+              const Color(0x663E158A),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x28170A56),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Expanded(
               child: Container(
                 height: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFE9DEFF)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x12A36BFF),
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
                 ),
-                child: Center(
-                  child: TextField(
-                    onChanged: onChanged,
-                    style: const TextStyle(
-                      color: Color(0xFF553090),
+                child: TextField(
+                  onChanged: onChanged,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(
+                    color: Color(0xFF5F36AE),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: const TextStyle(
+                      color: Color(0xFFA79AC8),
                       fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
-                    decoration: InputDecoration(
-                      hintText: hintText,
-                      hintStyle: const TextStyle(
-                        color: Color(0xFF9D8EC1),
-                        fontSize: 15,
-                      ),
-                      border: InputBorder.none,
-                      isCollapsed: true,
-                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                    isDense: true,
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 10),
-            const Padding(
-              padding: EdgeInsets.only(right: 8),
-              child: Icon(
+            Container(
+              width: 44,
+              height: 44,
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE9DEFF)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x22A36BFF),
+                    blurRadius: 12,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const Icon(
                 Icons.search_rounded,
-                color: Color(0xFFB985FF),
+                color: Color(0xFF8E45FE),
                 size: 24,
               ),
             ),

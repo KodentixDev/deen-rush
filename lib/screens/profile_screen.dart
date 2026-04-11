@@ -38,9 +38,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'aubrey',
   };
 
+  String _displayText(String value, Locale locale) {
+    final languageCode = locale.languageCode;
+    final lower = (languageCode == 'tr' || languageCode == 'az')
+        ? value
+            .replaceAll('İ', 'i')
+            .replaceAll('I', 'ı')
+            .toLowerCase()
+        : value.toLowerCase();
+
+    return lower
+        .split(RegExp(r'\s+'))
+        .map((word) => _capitalizeWord(word, languageCode))
+        .join(' ');
+  }
+
+  String _capitalizeWord(String value, String languageCode) {
+    if (value.isEmpty) {
+      return value;
+    }
+
+    final first = value[0];
+    final rest = value.substring(1);
+    String capitalizedFirst;
+
+    if (languageCode == 'tr' || languageCode == 'az') {
+      if (first == 'i') {
+        capitalizedFirst = 'İ';
+      } else if (first == 'ı') {
+        capitalizedFirst = 'I';
+      } else {
+        capitalizedFirst = first.toUpperCase();
+      }
+    } else {
+      capitalizedFirst = first.toUpperCase();
+    }
+
+    return '$capitalizedFirst$rest';
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
+    final display = (String value) => _displayText(value, strings.locale);
 
     Future<void> openEdit() async {
       await Navigator.of(context).push(
@@ -80,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context: context,
         barrierColor: Colors.black.withValues(alpha: 0.46),
         builder: (context) => _LogoutDialog(
-          title: strings.text('settingsLogout'),
+          title: display(strings.text('settingsLogout')),
           message: strings.text('logoutMessage'),
           cancel: strings.text('dialogCancel'),
           ok: strings.text('dialogOk'),
@@ -121,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     strings.text('homePlayEnjoy'),
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Color(0xD9FFFFFF),
+                      color: Color(0xFFF1E8FF),
                     ),
                   ),
                 ),
@@ -129,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _Panel(
                   child: _ActionTile(
                     icon: Icons.group_outlined,
-                    title: strings.text('profileFriends'),
+                    title: display(strings.text('profileFriends')),
                     onTap: openFriends,
                     trailing: _FriendStrip(friendIds: _friendIds),
                   ),
@@ -138,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _Panel(
                   child: _ActionTile(
                     icon: Icons.mode_edit_outline_rounded,
-                    title: strings.text('profileEditProfile'),
+                    title: display(strings.text('profileEditProfile')),
                     onTap: openEdit,
                   ),
                 ),
@@ -148,21 +188,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       _ActionTile(
                         icon: Icons.language_rounded,
-                        title: strings.language,
+                        title: display(strings.language),
                         value: strings.localeLabel(widget.currentLocale),
                         onTap: openLanguage,
                       ),
                       const Divider(height: 1),
                       _SwitchTile(
                         icon: Icons.volume_up_outlined,
-                        title: strings.text('profileEffectSound'),
+                        title: display(strings.text('profileEffectSound')),
                         value: _soundOn,
                         onChanged: () => setState(() => _soundOn = !_soundOn),
                       ),
                       const Divider(height: 1),
                       _SwitchTile(
                         icon: Icons.music_note_rounded,
-                        title: strings.text('settingsMusic'),
+                        title: display(strings.text('settingsMusic')),
                         value: _musicOn,
                         onChanged: () => setState(() => _musicOn = !_musicOn),
                       ),
@@ -173,20 +213,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _Panel(
                   child: Column(
                     children: [
-                      _ActionTile(icon: Icons.description_outlined, title: strings.terms),
+                      _ActionTile(
+                        icon: Icons.description_outlined,
+                        title: display(strings.terms),
+                      ),
                       const Divider(height: 1),
-                      _ActionTile(icon: Icons.shield_outlined, title: strings.privacy),
+                      _ActionTile(
+                        icon: Icons.shield_outlined,
+                        title: display(strings.privacy),
+                      ),
                       const Divider(height: 1),
                       _ActionTile(
                         icon: Icons.logout_rounded,
-                        title: strings.text('settingsLogout'),
+                        title: display(strings.text('settingsLogout')),
                         onTap: confirmLogout,
                         trailing: const SizedBox.shrink(),
                       ),
                       const Divider(height: 1),
                       _ActionTile(
                         icon: Icons.delete_outline_rounded,
-                        title: strings.text('profileCleanResource'),
+                        title: display(strings.text('profileCleanResource')),
                         titleColor: const Color(0xFFFF6B6B),
                         iconColor: const Color(0xFFFF6B6B),
                         trailing: const SizedBox.shrink(),
@@ -310,8 +356,8 @@ class _ActionTile extends StatelessWidget {
     this.onTap,
     this.value,
     this.trailing,
-    this.titleColor = const Color(0xFF2D2A39),
-    this.iconColor = const Color(0xFF2D2A39),
+    this.titleColor = const Color(0xFF3D2A67),
+    this.iconColor = const Color(0xFF3D2A67),
   });
 
   final IconData icon;
@@ -335,13 +381,24 @@ class _ActionTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: titleColor),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: titleColor,
+                  ),
                 ),
               ),
               if (value != null)
                 Padding(
                   padding: const EdgeInsets.only(right: 10),
-                  child: Text(value!, style: const TextStyle(fontSize: 15, color: Color(0xFF68637D))),
+                  child: Text(
+                    value!,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF7A699F),
+                    ),
+                  ),
                 ),
               trailing ?? const Icon(Icons.chevron_right_rounded, color: Color(0xFF8B8897)),
             ],
@@ -362,9 +419,18 @@ class _SwitchTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: const Color(0xFF2D2A39)),
+            Icon(icon, size: 22, color: const Color(0xFF3D2A67)),
             const SizedBox(width: 12),
-            Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF2D2A39)))),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF3D2A67),
+                ),
+              ),
+            ),
             GestureDetector(
               onTap: onChanged,
               child: AnimatedContainer(
