@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/community/community_screen_widgets.dart';
 import '../config/app_theme.dart';
 import '../l10n/app_strings.dart';
 
@@ -69,10 +70,7 @@ class CommunityScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.84),
                     borderRadius: BorderRadius.circular(999),
@@ -112,21 +110,21 @@ class CommunityScreen extends StatelessWidget {
                   style: theme.textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                const _LeaderTile(
+                const CommunityLeaderTile(
                   rank: 1,
                   name: 'Amina',
                   score: '1240 XP',
                   accent: AppTheme.primary,
                 ),
                 const SizedBox(height: 12),
-                const _LeaderTile(
+                const CommunityLeaderTile(
                   rank: 2,
                   name: 'Sarah',
                   score: '1170 XP',
                   accent: Color(0xFFFFA95D),
                 ),
                 const SizedBox(height: 12),
-                const _LeaderTile(
+                const CommunityLeaderTile(
                   rank: 3,
                   name: 'Yusuf',
                   score: '1105 XP',
@@ -134,62 +132,6 @@ class CommunityScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LeaderTile extends StatelessWidget {
-  const _LeaderTile({
-    required this.rank,
-    required this.name,
-    required this.score,
-    required this.accent,
-  });
-
-  final int rank;
-  final String name;
-  final String score;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: accent.withValues(alpha: 0.24),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '$rank',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              name,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          Text(
-            score,
-            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),

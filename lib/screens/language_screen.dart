@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/language/language_screen_widgets.dart';
 import '../l10n/app_strings.dart';
 
 class LanguageScreen extends StatefulWidget {
@@ -27,13 +28,13 @@ class _LanguageScreenState extends State<LanguageScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned.fill(child: _LanguageBackground()),
+            const Positioned.fill(child: LanguageBackground()),
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _BackCircle(onTap: () => Navigator.of(context).pop()),
+                  LanguageBackCircle(onTap: () => Navigator.of(context).pop()),
                   const SizedBox(height: 22),
                   Text(
                     strings.language,
@@ -51,8 +52,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                     ),
                     child: Column(
                       children: AppStrings.supportedLocales.map((locale) {
-                        final selected =
-                            locale.languageCode == _selected.languageCode;
+                        final selected = locale.languageCode == _selected.languageCode;
                         return InkWell(
                           onTap: () {
                             setState(() => _selected = locale);
@@ -68,8 +68,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                                 bottom: locale == AppStrings.supportedLocales.last
                                     ? BorderSide.none
                                     : BorderSide(
-                                        color: Colors.black
-                                            .withValues(alpha: 0.08),
+                                        color: Colors.black.withValues(alpha: 0.08),
                                       ),
                               ),
                             ),
@@ -120,88 +119,15 @@ class _LanguageScreenState extends State<LanguageScreen> {
   String _flag(Locale locale) {
     switch (locale.languageCode) {
       case 'az':
-        return '🇦🇿';
+        return '\ud83c\udde6\ud83c\uddff';
       case 'tr':
-        return '🇹🇷';
+        return '\ud83c\uddf9\ud83c\uddf7';
       case 'ru':
-        return '🇷🇺';
+        return '\ud83c\uddf7\ud83c\uddfa';
       case 'ar':
-        return '🇸🇦';
+        return '\ud83c\uddf8\ud83c\udde6';
       default:
-        return '🇺🇸';
+        return '\ud83c\uddfa\ud83c\uddf8';
     }
   }
-}
-
-class _LanguageBackground extends StatelessWidget {
-  const _LanguageBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: const [
-      Positioned.fill(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF8E45FE), Color(0xFF6E68F8)],
-            ),
-          ),
-        ),
-      ),
-      _SoftGlow(top: -40, right: -52, size: 200),
-      _SoftGlow(bottom: -30, left: -30, size: 160),
-    ]);
-  }
-}
-
-class _SoftGlow extends StatelessWidget {
-  const _SoftGlow({this.top, this.right, this.bottom, this.left, required this.size});
-  final double? top;
-  final double? right;
-  final double? bottom;
-  final double? left;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) => Positioned(
-        top: top,
-        right: right,
-        bottom: bottom,
-        left: left,
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                Colors.white.withValues(alpha: 0.08),
-                Colors.white.withValues(alpha: 0),
-              ],
-            ),
-          ),
-        ),
-      );
-}
-
-class _BackCircle extends StatelessWidget {
-  const _BackCircle({required this.onTap});
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.14),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-        ),
-      );
 }
